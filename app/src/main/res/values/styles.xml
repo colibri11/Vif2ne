@@ -1,0 +1,73 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/md_white_1000</item>
+        <item name="android:textColor">@color/md_black_1000</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="Button.Floating" parent="android:Widget.Button">
+        <item name="android:textColor">@color/md_white_1000</item>
+        <item name="android:background">@drawable/circle_button</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:width">56dp</item>
+        <item name="android:height">56dp</item>
+        <item name="android:minWidth">56dp</item>
+        <item name="android:minHeight">56dp</item>
+    </style>
+
+    <style name="Button.Floating.Mini" parent="Button.Floating">
+        <item name="android:width">40dp</item>
+        <item name="android:height">40dp</item>
+        <item name="android:minWidth">40dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="Button.Flat" parent="android:Widget.Button">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/text_large_size</item>
+        <item name="android:minWidth">64dp</item>
+        <item name="android:height">36dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:gravity">center_vertical|right</item>>
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+    <style name="Badge" parent="android:TextAppearance.Widget.TextView">
+        <item name="android:textSize">10dp</item>
+        <item name="android:layout_marginLeft">-10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/badge</item>
+        <item name="android:layout_alignParentRight">false</item>
+        <item name="android:minWidth">16dp</item>
+    </style>
+
+    <style name="Theme.Vif.Light.Dialog" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+        <item name="android:windowTitleBackgroundStyle">@android:color/transparent</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="noAnimTheme" parent="android:Theme">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <dimen name="text_large_size">16dp</dimen>
+</resources>

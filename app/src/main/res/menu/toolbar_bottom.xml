@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bottom_menu_auth"
+        android:icon="@drawable/ic_action_person_outline"
+        android:orderInCategory="90"
+        android:title="@string/menu_sign_in"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/bottom_menu_home"
+        android:icon="@drawable/ic_action_home"
+        android:orderInCategory="100"
+        android:title="@string/menu_home"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/bottom_menu_up"
+        android:icon="@drawable/ic_action_expand_less"
+        android:orderInCategory="110"
+        android:title="@string/menu_up"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/bottom_menu_favorites"
+        android:icon="@drawable/ic_action_grade"
+        android:orderInCategory="130"
+        android:title="@string/menu_favorites"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/bottom_menu_add"
+        android:icon="@drawable/ic_action_add"
+        android:orderInCategory="140"
+        android:title="@string/menu_add"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/bottom_menu_download_tree"
+        android:icon="@drawable/ic_action_file_download"
+        android:orderInCategory="150"
+        android:title="@string/menu_download"
+        app:showAsAction="always" />
+
+</menu>

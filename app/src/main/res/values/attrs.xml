@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TextAwesome">
+        <attr name="state_allow" format="boolean" />
+        <attr name="state_error" format="boolean" />
+        <attr name="state_complete" format="boolean" />
+    </declare-styleable>
+</resources>

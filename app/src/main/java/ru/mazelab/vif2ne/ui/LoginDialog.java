@@ -2,12 +2,15 @@ package ru.mazelab.vif2ne.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.LinearGradient;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.mazelab.vif2ne.R;
@@ -37,9 +40,11 @@ import ru.mazelab.vif2ne.backend.tasks.LoginTask;
 public class LoginDialog extends BaseActivity {
 
     private static final String LOGIN_NAME = "login";
-    EditText loginView, passView;
-    Button okAction, cancelAction;
-    ImageView loginStatusImage;
+    private EditText usernameEditView, passView;
+    private Button loginAction, cancelAction, logoutAction, cancelLogoutAction;
+    private ImageView loginStatusImage;
+    private LinearLayout loginLayout, logoutLayout;
+    private TextView usernameView;
     private String goOnExit;
     private Intent intent;
 
@@ -47,23 +52,41 @@ public class LoginDialog extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginView = (EditText) findViewById(R.id.login_view);
+        usernameEditView = (EditText) findViewById(R.id.username_edit_view);
         passView = (EditText) findViewById(R.id.passwd_view);
-        okAction = (Button) findViewById(R.id.action_ok);
+        loginAction = (Button) findViewById(R.id.action_login);
         cancelAction = (Button) findViewById(R.id.action_cancel);
+        logoutAction = (Button) findViewById(R.id.logout_action);
+        cancelLogoutAction = (Button) findViewById(R.id.action_cancel_logout);
+        loginLayout = (LinearLayout) findViewById(R.id.login_layout);
+        logoutLayout = (LinearLayout) findViewById(R.id.logout_layout);
+        usernameView = (TextView) findViewById(R.id.username_view);
+
         loginStatusImage = (ImageView) findViewById(R.id.login_status_image);
         loadText();
         cancelAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        cancelLogoutAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        logoutAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 remoteService.logout();
                 finish();
             }
         });
-        okAction.setOnClickListener(new View.OnClickListener() {
+        loginAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LoginTask(session, loginView.getText().toString(), passView.getText().toString()) {
+                new LoginTask(session, usernameEditView.getText().toString(), passView.getText().toString()) {
                     @Override
                     public void goSuccess(Object result) {
                         Toast.makeText(getApplicationContext(), "Login ok", Toast.LENGTH_LONG).show();
@@ -89,24 +112,29 @@ public class LoginDialog extends BaseActivity {
     @Override
     protected void bind() {
         if (remoteService.isAuthenticated()) {
+            usernameView.setText(remoteService.getUserName());
+            loginLayout.setVisibility(View.GONE);
+            logoutLayout.setVisibility(View.VISIBLE);
             loginStatusImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_person));
         } else {
+            loginLayout.setVisibility(View.VISIBLE);
+            logoutLayout.setVisibility(View.GONE);
             loginStatusImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_perm_identity));
         }
     }
 
     void saveText() {
-        if (loginView == null) return;
+        if (usernameEditView == null) return;
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(LOGIN_NAME, loginView.getText().toString());
+        ed.putString(LOGIN_NAME, usernameEditView.getText().toString());
         ed.apply();
     }
 
     void loadText() {
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
         String savedText = sPref.getString(LOGIN_NAME, "");
-        loginView.setText(savedText);
+        usernameEditView.setText(savedText);
     }
 
 }

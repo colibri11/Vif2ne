@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -152,7 +154,7 @@ public class MainActivity extends BaseActivity {
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(!session.getNavigator().getEventEntry().isRoot());
         showNonBlockingProgress();
         refreshBottomMenu();
-        setupEvenlyDistributedToolbar(toolbarBottom);
+        //setupEvenlyDistributedToolbar(toolbarBottom);
     }
 
     public void showNonBlockingProgress() {
@@ -190,7 +192,8 @@ public class MainActivity extends BaseActivity {
         display.getMetrics(metrics);
 
         // Add 10 spacing on either side of the toolbar
-        mToolbar.setContentInsetsAbsolute(10, 10);
+        //mToolbar.setContentInsetsAbsolute(10, 10);
+        mToolbar.setContentInsetsAbsolute(0, 0);
 
         // Get the ChildCount of your Toolbar, this should only be 1
         int childCount = mToolbar.getChildCount();
@@ -198,8 +201,9 @@ public class MainActivity extends BaseActivity {
         int screenWidth = metrics.widthPixels;
 
         // Create the Toolbar Params based on the screenWidth
-        Toolbar.LayoutParams toolbarParams = new Toolbar.LayoutParams(screenWidth, Toolbar.LayoutParams.WRAP_CONTENT);
+        Toolbar.LayoutParams toolbarParams = new Toolbar.LayoutParams(screenWidth, Toolbar.LayoutParams.MATCH_PARENT);
 
+        Log.d(LOG_TAG, "metrics:" + metrics.widthPixels + " " + childCount);
         // Loop through the child Items
         for (int i = 0; i < childCount; i++) {
             // Get the item at the current index
@@ -211,12 +215,18 @@ public class MainActivity extends BaseActivity {
                 // Get the child count of this view group, and compute the item widths based on this count & screen size
                 int innerChildCount = ((ViewGroup) childView).getChildCount();
                 int itemWidth = (screenWidth / innerChildCount);
+                Log.d(LOG_TAG, "metrics:" + itemWidth + " cnt:" + innerChildCount);
+
                 // Create layout params for the ActionMenuView
-                ActionMenuView.LayoutParams params = new ActionMenuView.LayoutParams(itemWidth, ActionBar.LayoutParams.WRAP_CONTENT);
+//                ActionMenuView.LayoutParams params = new ActionMenuView.LayoutParams(itemWidth, ActionBar.LayoutParams.WRAP_CONTENT);
+                ActionMenuView.LayoutParams params = new ActionMenuView.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT);
+                params.weight = 1;
+                params.gravity = Gravity.CENTER_HORIZONTAL;
                 // Loop through the children
                 for (int j = 0; j < innerChildCount; j++) {
                     View grandChild = ((ViewGroup) childView).getChildAt(j);
                     if (grandChild instanceof ActionMenuItemView) {
+                        Log.d(LOG_TAG, "metr grandC:" + j + " params:" + params.width);
                         // set the layout parameters on each View
                         grandChild.setLayoutParams(params);
                     }

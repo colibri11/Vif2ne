@@ -8,10 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:orientation="vertical">
@@ -23,39 +24,87 @@
                 android:src="@drawable/ic_perm_identity" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/login_view"
+        <LinearLayout
+            android:id="@+id/login_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:hint="Логин" />
+            android:orientation="vertical"
+            android:visibility="gone">
 
-        <EditText
-            android:id="@+id/passwd_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Пароль"
-            android:password="true" />
+            <EditText
+                android:id="@+id/username_edit_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:hint="Логин"
+                android:lines="1" />
+
+            <EditText
+                android:id="@+id/passwd_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Пароль"
+                android:lines="1"
+                android:password="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/action_cancel"
+                    style="@style/Button.Flat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_cancel" />
+
+                <Button
+                    android:id="@+id/action_login"
+                    style="@style/Button.Flat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_action" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/logout_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="right"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/action_cancel"
-                style="@style/Button.Flat"
+            <TextView
+                android:id="@+id/username_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Отменить" />
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/test_short"
+                android:textSize="@dimen/text_large_x_size" />
 
-            <Button
-                android:id="@+id/action_ok"
-                style="@style/Button.Flat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Вход" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/action_cancel_logout"
+                    style="@style/Button.Flat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_cancel" />
+
+                <Button
+                    android:id="@+id/logout_action"
+                    style="@style/Button.Flat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/logout_action" />
+
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

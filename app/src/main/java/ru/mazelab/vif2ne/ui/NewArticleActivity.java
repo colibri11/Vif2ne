@@ -60,11 +60,11 @@ public class NewArticleActivity extends BaseActivity {
             entryUserNameView.setText(eventEntry.getAuthor());
             entryTitleView.setText(eventEntry.getTitleArticle());
             String s = eventEntry.getTitleArticle();
-            if (s.length() > 10)
-                s = s.substring(0, 9);
+            if (s.length() > 20)
+                s = s.substring(0, 19);
             entryNewTitle.setText(String.format("Re: %s...", s));
-            s = eventEntry.getArticle();
-            entryEditArticle.setText(s);
+            //s = eventEntry.getArticle();
+            //entryEditArticle.setText(s);
         }
 
     }

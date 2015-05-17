@@ -100,6 +100,7 @@ public class RemoteService {
     private String basicAuth;
 
     private ArrayList<String> setCookies;
+    private String userName;
 
 
     public RemoteService() {
@@ -129,7 +130,7 @@ public class RemoteService {
     public void login(String user, String passwd) throws IOException, ApplicationException {
         URL url = new URL(URL_ACCESS);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
+        setUserName("");
         basicAuth = "Basic " + Base64.encodeToString((user + ":" + passwd).getBytes(), Base64.DEFAULT);
         connection.setRequestProperty("Authorization", basicAuth);
         connection.setUseCaches(false);
@@ -157,6 +158,8 @@ public class RemoteService {
             for (String cookie : cookieStrings) {
                 setCookies.add(cookie);
             }
+            setUserName(user);
+
         } finally {
             connection.disconnect();
         }
@@ -201,5 +204,13 @@ public class RemoteService {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

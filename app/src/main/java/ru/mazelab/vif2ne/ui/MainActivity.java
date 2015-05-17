@@ -264,6 +264,16 @@ public class MainActivity extends BaseActivity {
                     menuItem.setIcon(R.drawable.ic_action_home_disabled);
                 }
             }
+            if (menuItem.getTitle().equals(getResources().getString(R.string.menu_add))) {
+                if (getParentEventEntry().isRoot()) {
+                    menuItem.setEnabled(false);
+                    menuItem.setIcon(R.drawable.ic_action_add_disabled);
+                } else {
+                    menuItem.setEnabled(true);
+                    menuItem.setIcon(R.drawable.ic_action_add);
+                }
+            }
+
             if (menuItem.getTitle().equals(getResources().getString(R.string.menu_download))) {
                 menuItemDownload = menuItem;
                 if (!getParentEventEntry().isRoot() && getMode() == Session.TREE_MODE) {

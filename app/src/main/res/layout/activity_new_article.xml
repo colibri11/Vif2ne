@@ -57,14 +57,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/entry_edit_article"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:lines="4"
-        android:maxLines="4"
-        android:nestedScrollingEnabled="true"
-        android:textIsSelectable="false" />
+        android:layout_weight="1">
+
+        <EditText
+            android:id="@+id/entry_edit_article"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textMultiLine" />
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

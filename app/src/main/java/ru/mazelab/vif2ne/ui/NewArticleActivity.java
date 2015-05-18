@@ -59,16 +59,19 @@ public class NewArticleActivity extends BaseActivity {
         entryTitleView = (TextView) findViewById(R.id.entry_title);
         entryNewTitle = (EditText) findViewById(R.id.entry_new_title);
         entryToRoot = (CheckBox) findViewById(R.id.entry_to_root);
+
         postAction = (Button) findViewById(R.id.post_action);
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Log.d(LOG_TAG, "on click");
-                    Article article = new Article(eventEntry.getArtNo(),
-                            entryNewTitle.getText().toString(),
-                            entryEditArticle.getText().toString(),
-                            entryToRoot.isChecked()
-                    );
+                Log.d(LOG_TAG, "on click");
+                String s = entryEditArticle.getText().toString();
+                s = s.replaceAll("\n", "<BR>");
+                Article article = new Article(eventEntry.getArtNo(),
+                        entryNewTitle.getText().toString(),
+                        s,
+                        entryToRoot.isChecked()
+                );
                 session.setArticle(article);
                 Intent intent = new Intent(session.getCurrentActivity(), WebActivity.class);
                 session.getCurrentActivity().startActivity(intent);
@@ -96,8 +99,8 @@ public class NewArticleActivity extends BaseActivity {
             if (s.length() > 20)
                 s = s.substring(0, 19);
             entryNewTitle.setText(String.format("Re: %s...", s));
-            //s = eventEntry.getArticle();
-            //entryEditArticle.setText(s);
+//            s = eventEntry.getArticle();
+//            entryEditArticle.setText(s);
         }
 
     }

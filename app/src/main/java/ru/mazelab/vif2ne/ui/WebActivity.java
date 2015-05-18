@@ -7,7 +7,6 @@ import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import ru.mazelab.vif2ne.R;
@@ -60,11 +59,7 @@ public class WebActivity extends BaseActivity {
         html = html + "\n</form>\n</body>\n</html>";
 
         Log.d(LOG_TAG, html);
-        try {
-            html = new String(html.getBytes(), "windows-1251");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+
         webView.loadData(html, "text/html; charset=windows-1251", null);
         webView.setBackgroundColor(getResources().getColor(R.color.transparent));
 
@@ -72,7 +67,6 @@ public class WebActivity extends BaseActivity {
             @Override
             public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
                 handler.proceed(remoteService.getUserName(), remoteService.getPasswd());
-//                super.onReceivedHttpAuthRequest(view, handler, host, realm);
             }
         });
 

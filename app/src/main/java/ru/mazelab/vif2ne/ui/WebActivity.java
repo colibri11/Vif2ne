@@ -7,6 +7,8 @@ import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import ru.mazelab.vif2ne.R;
@@ -47,16 +49,27 @@ public class WebActivity extends BaseActivity {
 
         Article article = session.getArticle();
 
-        String html = "<html>\n<body onLoad=\"document.getElementById('form').submit()\">" +
+
+        String html = "<html>" +
+                "\n<body onLoad=\"document.getElementById('form').submit()\">" +
                 "\n<form id=\"form\" target=\"_self\" method=\"POST\" action=\"" +
                 String.format(RemoteService.URL_POST_PREVIEW, article.getId())
                 + "\">";
         for (Map.Entry<String, String> entry : article.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
+            Log.d(LOG_TAG, value);
+            try {
+                value = URLEncoder.encode(
+                        new String(value.getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
             html = html + "\n<input type=\"hidden\" name=\"" + key + "\" value=\"" + value + "\" />";
         }
         html = html + "\n</form>\n</body>\n</html>";
+
 
         Log.d(LOG_TAG, html);
 

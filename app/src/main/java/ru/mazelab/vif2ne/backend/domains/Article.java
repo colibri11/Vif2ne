@@ -15,13 +15,14 @@ public class Article extends HashMap<String, String> {
 
     public Article(long id, String subject, String body, boolean toplevel) {
         this.id = id;
-        //       put("id",Long.toString(id));
         put("subject", subject);
         if (toplevel)
             put("toplevel", "1");
+
         put("body", body);
         put("hello", "");
         put("bye", "");
+
     }
 
     public long getId() {
@@ -36,11 +37,6 @@ public class Article extends HashMap<String, String> {
                 first = false;
             else
                 result.append("&");
-            /*try {
-                html = new String(html.getBytes(), "windows-1251");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }*/
             result.append(URLEncoder.encode(entry.getKey(), CHARSET));
             result.append("=");
             result.append(URLEncoder.encode(new String(entry.getValue().getBytes(), "windows-1251"), CHARSET));

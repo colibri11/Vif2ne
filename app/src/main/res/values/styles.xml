@@ -69,6 +69,4 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <dimen name="text_large_size">16dp</dimen>
-    <dimen name="text_large_x_size">21dp</dimen>
 </resources>

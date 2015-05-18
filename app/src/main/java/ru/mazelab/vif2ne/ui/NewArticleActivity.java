@@ -8,11 +8,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import ru.mazelab.vif2ne.R;
 import ru.mazelab.vif2ne.backend.LocalUtils;
 import ru.mazelab.vif2ne.backend.domains.Article;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
+import ru.mazelab.vif2ne.backend.tasks.PostArticleTask;
 
 /*
  * Copyright (C) 2015 The Android Open Source Project
@@ -44,7 +46,7 @@ public class NewArticleActivity extends BaseActivity {
     protected EditText entryNewTitle, entryEditArticle;
     protected CheckBox entryToRoot;
 
-    protected Button postAction;
+    protected Button postAction, previewAction;
 
 
     @Override
@@ -60,31 +62,39 @@ public class NewArticleActivity extends BaseActivity {
         entryNewTitle = (EditText) findViewById(R.id.entry_new_title);
         entryToRoot = (CheckBox) findViewById(R.id.entry_to_root);
 
+        previewAction = (Button) findViewById(R.id.preview_action);
         postAction = (Button) findViewById(R.id.post_action);
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(LOG_TAG, "on click");
-                String s = entryEditArticle.getText().toString();
-                s = s.replaceAll("\n", "<BR>");
                 Article article = new Article(eventEntry.getArtNo(),
                         entryNewTitle.getText().toString(),
-                        s,
+                        entryEditArticle.getText().toString(),
+                        entryToRoot.isChecked()
+                );
+                new PostArticleTask(session, article) {
+                    @Override
+                    public void goSuccess(Object result) {
+                        session.setWebContent((String) result);
+                        session.loadTree(session.getEventEntries().getLastEvent());
+                        Toast.makeText(getApplicationContext(), "refreshing", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }.execute((Void) null);
+            }
+        });
+        previewAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Article article = new Article(eventEntry.getArtNo(),
+                        entryNewTitle.getText().toString(),
+                        entryEditArticle.getText().toString(),
                         entryToRoot.isChecked()
                 );
                 session.setArticle(article);
                 Intent intent = new Intent(session.getCurrentActivity(), WebActivity.class);
                 session.getCurrentActivity().startActivity(intent);
 
-
-/*                    new PostArticleTask(session, article) {
-                        @Override
-                        public void goSuccess(Object result) {
-                            session.setWebContent((String) result);
-                            Toast.makeText(getApplicationContext(), "need refresh", Toast.LENGTH_SHORT).show();
-                        }
-                    }.execute((Void) null);
-*/
             }
         });
     }
@@ -95,10 +105,13 @@ public class NewArticleActivity extends BaseActivity {
             entryDateView.setText(LocalUtils.formatDateTime(this, eventEntry.getDate()));
             entryUserNameView.setText(eventEntry.getAuthor());
             entryTitleView.setText(eventEntry.getTitleArticle());
+            entryNewTitle.setText(eventEntry.getTitleArticle());
+            /*
             String s = eventEntry.getTitleArticle();
             if (s.length() > 20)
                 s = s.substring(0, 19);
             entryNewTitle.setText(String.format("Re: %s...", s));
+            */
 //            s = eventEntry.getArticle();
 //            entryEditArticle.setText(s);
         }

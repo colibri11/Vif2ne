@@ -58,4 +58,5 @@
     <string name="to_root">В корень</string>
     <string name="post_action">Опубликовать</string>
     <string name="title_preview_article">Предварительный просмотр</string>
+    <string name="preview_action">Просмотреть</string>
 </resources>

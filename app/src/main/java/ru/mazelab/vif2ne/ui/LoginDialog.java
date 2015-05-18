@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.LinearGradient;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -96,6 +97,7 @@ public class LoginDialog extends BaseActivity {
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             session.getCurrentActivity().startActivity(intent);
+                            finish();
                         } else
                             finish();
                     }
@@ -133,8 +135,8 @@ public class LoginDialog extends BaseActivity {
 
     void loadText() {
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        String savedText = sPref.getString(LOGIN_NAME, "");
-        usernameEditView.setText(savedText);
+        String savedUserName = sPref.getString(LOGIN_NAME, "");
+        usernameEditView.setText(savedUserName);
     }
 
 }

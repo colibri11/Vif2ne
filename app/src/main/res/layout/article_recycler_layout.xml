@@ -84,14 +84,16 @@
                             android:id="@+id/entry_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="11.05.2015 02:24:27" />
+                            android:text="11.05.2015 02:24:27"
+                            android:textSize="@dimen/text_small_size" />
 
                         <TextView
                             android:id="@+id/entry_size"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="4dp"
-                            android:text="(82, 798 b)" />
+                            android:text="(82, 798 b)"
+                            android:textSize="@dimen/text_small_size" />
 
                         <TextView
                             android:id="@+id/entry_child"
@@ -101,14 +103,15 @@
                             android:gravity="right"
                             android:paddingLeft="4dp"
                             android:paddingRight="4dp"
-                            android:text="4" />
+                            android:text="4"
+                            android:textSize="@dimen/text_small_size" />
 
                         <view
                             class="ru.mazelab.vif2ne.ui.widget.TextAwesome"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/fa_mail_reply"
-                            android:textSize="16dp" />
+                            android:textSize="@dimen/text_small_size" />
 
                     </LinearLayout>
 

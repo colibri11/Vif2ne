@@ -1,5 +1,7 @@
 package ru.mazelab.vif2ne.backend;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -103,6 +105,8 @@ public class RemoteService {
     private static final String URL_NAME_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
     private static final String COOKIE_SET = "Set-Cookie";
     private static final String URL_ACCESS = "http://vif2ne.ru/nvk/forum/security";
+    private static final String LOGIN_NAME = "login";
+    private static final String PASSWD = "dwp";
     private String basicAuth;
 
     private ArrayList<String> setCookies;
@@ -117,13 +121,30 @@ public class RemoteService {
         basicAuth = "";
     }
 
+    void saveText(SharedPreferences sPref) {
+        //  SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(LOGIN_NAME, getUserName());
+        ed.putString(PASSWD, Base64.encodeToString(basicAuth.getBytes(), Base64.DEFAULT));
+        ed.apply();
+    }
+
+    void loadText(SharedPreferences sPref) {
+        // SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        setUserName(sPref.getString(LOGIN_NAME, ""));
+        String codepwd = sPref.getString(PASSWD, "");
+        if (!TextUtils.isEmpty(codepwd))
+            basicAuth = new String(Base64.decode(codepwd.getBytes(), Base64.DEFAULT));
+    }
+
     public boolean isAuthenticated() {
         return !TextUtils.isEmpty(basicAuth);
     }
 
     public void logout() {
         basicAuth = "";
-
+        setUserName("");
+        setPasswd("");
         setCookies.clear();
     }
 
@@ -174,7 +195,7 @@ public class RemoteService {
     public String postArticle(Article article) throws IOException, ApplicationException {
         if (article == null) return null;
         String qry = article.getQuery();
-        URL url = new URL(String.format(URL_POST_PREVIEW, article.getId()));
+        URL url = new URL(String.format(URL_POST, article.getId()));
         Log.d(LOG_TAG, url.toString());
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         auth(connection);
@@ -187,7 +208,6 @@ public class RemoteService {
             out.write(qry.getBytes());
             out.flush();
             out.close();
-//            InputStream in = new BufferedInputStream(connection.getInputStream());
             String preview = NetUtils.readStreamToString(connection.getInputStream(), "windows-1251");
 
             int responseCode = connection.getResponseCode();

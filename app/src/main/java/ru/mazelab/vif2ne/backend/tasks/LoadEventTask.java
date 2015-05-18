@@ -52,9 +52,11 @@ public abstract class LoadEventTask extends AbstractTask {
         try {
             if (eventId == -1) {
                 eventId = session.getEventEntries().load();
+                Log.d(LOG_TAG, "last event:" + Long.toString(session.getEventEntries().getLastEvent()));
                 Log.d(LOG_TAG, "intent start");
                 session.intentNeedRefresh("end: session.getEventEntries().load()");
             }
+
             return remoteService.loadEventEntries(session.getEventEntries(), eventId);
         } catch (IOException e) {
             e.printStackTrace();

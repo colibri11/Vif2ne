@@ -1,5 +1,6 @@
 package ru.mazelab.vif2ne.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -7,15 +8,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONException;
 
 import ru.mazelab.vif2ne.R;
 import ru.mazelab.vif2ne.backend.LocalUtils;
 import ru.mazelab.vif2ne.backend.domains.Article;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
-import ru.mazelab.vif2ne.backend.tasks.PostArticleTask;
 
 /*
  * Copyright (C) 2015 The Android Open Source Project
@@ -66,23 +63,25 @@ public class NewArticleActivity extends BaseActivity {
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
                     Log.d(LOG_TAG, "on click");
                     Article article = new Article(eventEntry.getArtNo(),
                             entryNewTitle.getText().toString(),
                             entryEditArticle.getText().toString(),
                             entryToRoot.isChecked()
                     );
-                    new PostArticleTask(session, article) {
+                session.setArticle(article);
+                Intent intent = new Intent(session.getCurrentActivity(), WebActivity.class);
+                session.getCurrentActivity().startActivity(intent);
+
+
+/*                    new PostArticleTask(session, article) {
                         @Override
                         public void goSuccess(Object result) {
+                            session.setWebContent((String) result);
                             Toast.makeText(getApplicationContext(), "need refresh", Toast.LENGTH_SHORT).show();
                         }
                     }.execute((Void) null);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+*/
             }
         });
     }

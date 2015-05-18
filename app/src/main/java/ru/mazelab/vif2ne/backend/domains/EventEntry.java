@@ -111,6 +111,7 @@ public class EventEntry implements Comparable<EventEntry> {
     }
 
     public void save(SQLiteDatabase db) {
+        if (isRoot()) return;
         ContentValues cv = new ContentValues();
         pack(cv);
         db.insertWithOnConflict(TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_REPLACE);

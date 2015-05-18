@@ -4,25 +4,18 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,21 +94,20 @@ import ru.mazelab.vif2ne.throwable.ApplicationException;
  */
 public class RemoteService {
 
+    // private static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";
+    public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
+    public static final String URL_POST = "http://10.253.1.203:8080/post/test";
+    public static final String URL_POST_PREVIEW = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
     private static final String LOG_TAG = "RemoteService";
-
     private static final String URL_NAME_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
     private static final String URL_NAME_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
-
     private static final String COOKIE_SET = "Set-Cookie";
     private static final String URL_ACCESS = "http://vif2ne.ru/nvk/forum/security";
-    // private static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";
-    private static final String URL_POST = "http://10.253.1.203:8080/post/test";
-    private static final String URL_POST_PREVIEW = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
-
     private String basicAuth;
 
     private ArrayList<String> setCookies;
     private String userName;
+    private String passwd;
 
 
     public RemoteService() {
@@ -186,18 +178,17 @@ public class RemoteService {
         Log.d(LOG_TAG, url.toString());
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         auth(connection);
-        connection.setChunkedStreamingMode(0);
         connection.setDoOutput(true);
+        connection.setRequestProperty("Referer", String.format(URL_POST_REFERER, article.getId()));
+        connection.setFixedLengthStreamingMode(qry.getBytes().length);
         Log.d(LOG_TAG, "post:" + article.getQuery());
         try {
             OutputStream out = new BufferedOutputStream(connection.getOutputStream());
             out.write(qry.getBytes());
             out.flush();
             out.close();
-
-
-            InputStream in = new BufferedInputStream(connection.getInputStream());
-            String preview = NetUtils.readStreamToString(in, "windows-1251");
+//            InputStream in = new BufferedInputStream(connection.getInputStream());
+            String preview = NetUtils.readStreamToString(connection.getInputStream(), "windows-1251");
 
             int responseCode = connection.getResponseCode();
             Log.d(LOG_TAG, "rc:" + preview + " " + responseCode);
@@ -212,7 +203,6 @@ public class RemoteService {
         }
 
     }
-
 
 
     public void login(String user, String passwd) throws IOException, ApplicationException {
@@ -243,6 +233,7 @@ public class RemoteService {
                 }
             }
             setUserName(user);
+            setPasswd(passwd);
 
         } finally {
             connection.disconnect();
@@ -301,5 +292,13 @@ public class RemoteService {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPasswd() {
+        return passwd;
+    }
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
     }
 }

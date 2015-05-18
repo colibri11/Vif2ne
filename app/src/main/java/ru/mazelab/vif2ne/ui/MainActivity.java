@@ -1,6 +1,5 @@
 package ru.mazelab.vif2ne.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -15,15 +14,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -158,8 +152,10 @@ public class MainActivity extends BaseActivity {
     }
 
     public void showNonBlockingProgress() {
+/*
         if (refreshMenuItem == null || refreshMenuItem.getActionView() == null) return;
         if (session.getTasksContainer().size() > 0) {
+            LayoutInflater inflater = LayoutInflater.from(this);
             ImageView iv = (ImageView) refreshMenuItem.getActionView().findViewById(R.id.refresh_image_view);
             iv.startAnimation(AnimationUtils.loadAnimation(this, R.anim.background_active));
         } else {
@@ -167,6 +163,7 @@ public class MainActivity extends BaseActivity {
             iv.clearAnimation();
             iv.refreshDrawableState();
         }
+*/
     }
 
     @Override
@@ -401,6 +398,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.top_menu_refresh:
+                Log.d(LOG_TAG, "click");
                 if (session.getTasksContainer().size() == 0) {
                     session.loadTree(session.getEventEntries().getLastEvent());
                     showNonBlockingProgress();

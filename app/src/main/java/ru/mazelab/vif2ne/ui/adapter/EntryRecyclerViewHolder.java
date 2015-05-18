@@ -1,15 +1,12 @@
 package ru.mazelab.vif2ne.ui.adapter;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -213,11 +210,21 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
         entrySize.setText("(" + eventEntry.getSize() + " b)");
         entryUserName.setText(eventEntry.getAuthor());
         if (eventEntry.getTitleArticle() != null) {
+/*
             SpannableString str = new SpannableString(eventEntry.getTitleArticle());
             if (eventEntry.getFixed() > 0) {
                 str.setSpan(new StyleSpan(Typeface.BOLD), 0, str.length(), 0);
             }
-            entryTitle.setText(str);
+*/
+            String str = eventEntry.getTitleArticle();
+            if (eventEntry.isDeleted()) {
+                Log.d(LOG_TAG, "show deleted entry:" + eventEntry.toString());
+            }
+            if (eventEntry.getFixed() > 0)
+                str = String.format("<b>%s</b>", str);
+            if (eventEntry.isDeleted())
+                str = String.format("<strike>%s</strike>", str);
+            entryTitle.setText(Html.fromHtml(str));
         } else {
             entryTitle.setText("***");
         }

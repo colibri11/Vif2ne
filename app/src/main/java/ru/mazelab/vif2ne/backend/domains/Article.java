@@ -1,10 +1,5 @@
 package ru.mazelab.vif2ne.backend.domains;
 
-import android.content.ContentValues;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -16,7 +11,7 @@ import java.util.Map;
 public class Article extends HashMap<String, String> {
     private long id;
 
-    public Article(long id, String subject, String body, boolean toplevel) throws JSONException {
+    public Article(long id, String subject, String body, boolean toplevel) {
         this.id = id;
         //       put("id",Long.toString(id));
         put("subject", subject);

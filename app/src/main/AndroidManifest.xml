@@ -44,11 +44,21 @@
             android:name=".ui.LoginDialog"
             android:label="@string/title_login"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Vif.Light.Dialog"></activity>
+            android:theme="@style/Theme.Vif.Light.Dialog">
+
+        </activity>
         <activity
             android:name=".ui.NewArticleActivity"
             android:label="@string/title_new_article"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".ui.WebActivity"
+            android:label="@string/title_preview_article"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

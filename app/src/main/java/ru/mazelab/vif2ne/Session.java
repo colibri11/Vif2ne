@@ -5,9 +5,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.Map;
-
 import ru.mazelab.vif2ne.backend.RemoteService;
+import ru.mazelab.vif2ne.backend.domains.Article;
 import ru.mazelab.vif2ne.backend.domains.DBHelper;
 import ru.mazelab.vif2ne.backend.domains.EventEntries;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
@@ -57,6 +56,8 @@ public class Session {
     protected MainActivity currentActivity;
 
     protected DBHelper dbHelper;
+    private String webContent;
+    private Article article;
 
     public Session(MainApplication application) {
         this.application = application;
@@ -145,4 +146,19 @@ public class Session {
         this.eventEntry = eventEntry;
     }
 
+    public String getWebContent() {
+        return webContent;
+    }
+
+    public void setWebContent(String webContent) {
+        this.webContent = webContent;
+    }
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 }

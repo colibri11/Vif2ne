@@ -3,21 +3,16 @@ package ru.mazelab.vif2ne.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.internal.view.menu.ActionMenuItemView;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -58,7 +53,7 @@ public class MainActivity extends BaseActivity {
     protected RecyclerView recyclerView;
 
     protected ArrayList<EventEntry> navigatorEventEntries;
-    protected MenuItem searchMenuItem, refreshMenuItem;
+    protected MenuItem searchMenuItem;
     protected SearchView mSearchView;
     protected MenuItem menuItemDownload;
     private EventEntry parentEventEntry;
@@ -123,13 +118,10 @@ public class MainActivity extends BaseActivity {
     protected void bind() {
         session.setCurrentActivity(this);
         session.setEventEntry(getParentEventEntry());
-        Log.d(LOG_TAG, getParentEventEntry().toString());
-//        session.getEventEntries().loadChildEventEntries(navigatorEventEntries, parentEntry);
         navigatorEventEntries.clear();
         if (getParentEventEntry().isRoot()) {
             session.getEventEntries().loadChildEventEntries(navigatorEventEntries, getParentEventEntry());
         } else {
-//            session.getEventEntries().loadChildEventEntries(navigatorEventEntries, parentEntry);
             session.getEventEntries().loadChildEventEntriesWithTree(navigatorEventEntries, getParentEventEntry(), 0);
             navigatorEventEntries.add(0, getParentEventEntry());
         }
@@ -148,22 +140,18 @@ public class MainActivity extends BaseActivity {
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(!session.getNavigator().getEventEntry().isRoot());
         showNonBlockingProgress();
         refreshBottomMenu();
-        //setupEvenlyDistributedToolbar(toolbarBottom);
     }
 
     public void showNonBlockingProgress() {
-/*
-        if (refreshMenuItem == null || refreshMenuItem.getActionView() == null) return;
-        if (session.getTasksContainer().size() > 0) {
-            LayoutInflater inflater = LayoutInflater.from(this);
-            ImageView iv = (ImageView) refreshMenuItem.getActionView().findViewById(R.id.refresh_image_view);
-            iv.startAnimation(AnimationUtils.loadAnimation(this, R.anim.background_active));
-        } else {
-            ImageView iv = (ImageView) refreshMenuItem.getActionView().findViewById(R.id.refresh_image_view);
-            iv.clearAnimation();
-            iv.refreshDrawableState();
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress);
+        if (progressBar != null) {
+            if (session.getTasksContainer().size() > 0) {
+                Log.d(LOG_TAG, "show progress");
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+            }
         }
-*/
     }
 
     @Override
@@ -179,57 +167,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-
-    public void setupEvenlyDistributedToolbar(Toolbar mToolbar) {
-        // Use Display metrics to get Screen Dimensions
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-
-        // Add 10 spacing on either side of the toolbar
-        //mToolbar.setContentInsetsAbsolute(10, 10);
-        mToolbar.setContentInsetsAbsolute(0, 0);
-
-        // Get the ChildCount of your Toolbar, this should only be 1
-        int childCount = mToolbar.getChildCount();
-        // Get the Screen Width in pixels
-        int screenWidth = metrics.widthPixels;
-
-        // Create the Toolbar Params based on the screenWidth
-        Toolbar.LayoutParams toolbarParams = new Toolbar.LayoutParams(screenWidth, Toolbar.LayoutParams.MATCH_PARENT);
-
-        Log.d(LOG_TAG, "metrics:" + metrics.widthPixels + " " + childCount);
-        // Loop through the child Items
-        for (int i = 0; i < childCount; i++) {
-            // Get the item at the current index
-            View childView = mToolbar.getChildAt(i);
-            // If its a ViewGroup
-            if (childView instanceof ViewGroup) {
-                // Set its layout params
-                childView.setLayoutParams(toolbarParams);
-                // Get the child count of this view group, and compute the item widths based on this count & screen size
-                int innerChildCount = ((ViewGroup) childView).getChildCount();
-                int itemWidth = (screenWidth / innerChildCount);
-                Log.d(LOG_TAG, "metrics:" + itemWidth + " cnt:" + innerChildCount);
-
-                // Create layout params for the ActionMenuView
-//                ActionMenuView.LayoutParams params = new ActionMenuView.LayoutParams(itemWidth, ActionBar.LayoutParams.WRAP_CONTENT);
-                ActionMenuView.LayoutParams params = new ActionMenuView.LayoutParams(0, ActionBar.LayoutParams.WRAP_CONTENT);
-                params.weight = 1;
-                params.gravity = Gravity.CENTER_HORIZONTAL;
-                // Loop through the children
-                for (int j = 0; j < innerChildCount; j++) {
-                    View grandChild = ((ViewGroup) childView).getChildAt(j);
-                    if (grandChild instanceof ActionMenuItemView) {
-                        Log.d(LOG_TAG, "metr grandC:" + j + " params:" + params.width);
-                        // set the layout parameters on each View
-                        grandChild.setLayoutParams(params);
-                    }
-                }
-            }
-        }
     }
 
     public void refreshBottomMenu() {
@@ -314,6 +251,12 @@ public class MainActivity extends BaseActivity {
                     case R.id.bottom_menu_home:
                         session.navigate(null);
                         break;
+                    case R.id.bottom_menu_refresh:
+                        if (session.getTasksContainer().size() == 0) {
+                            session.loadTree(session.getEventEntries().getLastEvent());
+                            showNonBlockingProgress();
+                        }
+                        break;
                     case R.id.bottom_menu_auth:
                         session.navigate(null);
                         intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
@@ -356,7 +299,6 @@ public class MainActivity extends BaseActivity {
         mSearchView = (SearchView) searchMenuItem.getActionView();
         setupSearchView();
 
-        refreshMenuItem = menu.findItem(R.id.top_menu_refresh);
         showNonBlockingProgress();
 
         return true;
@@ -397,13 +339,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.top_menu_refresh:
-                Log.d(LOG_TAG, "click");
-                if (session.getTasksContainer().size() == 0) {
-                    session.loadTree(session.getEventEntries().getLastEvent());
-                    showNonBlockingProgress();
-                }
-                break;
             case android.R.id.home:
                 onBackPressed();
                 break;

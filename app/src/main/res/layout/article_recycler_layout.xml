@@ -119,6 +119,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/entry_body_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -128,6 +129,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:includeFontPadding="true"
+                    android:isScrollContainer="false"
                     android:text="New Text" />
 
                 <WebView

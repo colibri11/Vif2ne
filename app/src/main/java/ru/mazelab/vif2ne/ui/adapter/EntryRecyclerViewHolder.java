@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import ru.mazelab.vif2ne.R;
 import ru.mazelab.vif2ne.Session;
+import ru.mazelab.vif2ne.backend.ExtHtmlTagHandler;
 import ru.mazelab.vif2ne.backend.LocalUtils;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
 import ru.mazelab.vif2ne.backend.tasks.LoadArticleTask;
@@ -51,7 +52,7 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
     protected WebView mainWebView;
     protected Session session;
     protected LinearLayoutManager layoutManager;
-    protected LinearLayout entryLayout, subRootLayout;
+    protected LinearLayout entryLayout, subRootLayout, entryBodyLayout;
     protected String webContent = "<head>\n" +
             "    <style type=\"text/css\">\n" +
             "        body {\n" +
@@ -81,6 +82,7 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
         subRootLayout = (LinearLayout) itemView.findViewById(R.id.sub_root_layout);
         articleWOImages = (TextView) itemView.findViewById(R.id.article_wo_images);
         articleWOImages.setMovementMethod(LinkMovementMethod.getInstance());
+        entryBodyLayout = (LinearLayout) itemView.findViewById(R.id.entry_body_layout);
 
 
         entryFavorites.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +129,7 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        entryLayout.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickEntry = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventEntry entry = (EventEntry) v.getTag();
@@ -135,7 +137,10 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
                         session.getCurrentActivity().getMode() != Session.TREE_MODE)
                     session.navigate(entry);
             }
-        });
+        };
+
+        entryLayout.setOnClickListener(onClickEntry);
+        entryBodyLayout.setOnClickListener(onClickEntry);
     }
 
     public void showArticle(EventEntry eventEntry) {
@@ -154,9 +159,13 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
     public void bind(EventEntry eventEntry) {
         int position = getAdapterPosition();
         eventEntry.setPosition(position);
+        if (!TextUtils.isEmpty(eventEntry.getTitleArticle()) && eventEntry.getTitleArticle().indexOf("root") == 0) {
+            Log.d(LOG_TAG, "root!!!!" + eventEntry);
+        }
         mainWebView.setTag(eventEntry);
         entryFavorites.setTag(eventEntry);
         entryLayout.setTag(eventEntry);
+        entryBodyLayout.setTag(eventEntry);
 
         String s = "";
         if (position != 0)
@@ -193,9 +202,8 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
             } else {
                 articleWOImages.setVisibility(View.VISIBLE);
                 if (!TextUtils.isEmpty(eventEntry.getArticle())) {
-                    articleWOImages.setText(Html.fromHtml(eventEntry.getArticle()));
                     articleWOImages.setMaxLines(4);
-                    articleWOImages.setEllipsize(TextUtils.TruncateAt.END);
+                    articleWOImages.setText(Html.fromHtml(eventEntry.getArticle()));
                 } else {
                     if (eventEntry.getSize() > 0)
                         articleWOImages.setText("...");
@@ -217,14 +225,11 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
             }
 */
             String str = eventEntry.getTitleArticle();
-            if (eventEntry.isDeleted()) {
-                Log.d(LOG_TAG, "show deleted entry:" + eventEntry.toString());
-            }
             if (eventEntry.getFixed() > 0)
                 str = String.format("<b>%s</b>", str);
             if (eventEntry.isDeleted())
                 str = String.format("<strike>%s</strike>", str);
-            entryTitle.setText(Html.fromHtml(str));
+            entryTitle.setText(Html.fromHtml(str, null, new ExtHtmlTagHandler()));
         } else {
             entryTitle.setText("***");
         }

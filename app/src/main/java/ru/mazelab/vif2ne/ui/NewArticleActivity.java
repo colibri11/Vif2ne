@@ -2,7 +2,7 @@ package ru.mazelab.vif2ne.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -103,9 +103,13 @@ public class NewArticleActivity extends BaseActivity {
     protected void bind() {
         if (eventEntry != null) {
             entryDateView.setText(LocalUtils.formatDateTime(this, eventEntry.getDate()));
-            entryUserNameView.setText(eventEntry.getAuthor());
+            entryUserNameView.setText("К:" + eventEntry.getAuthor());
             entryTitleView.setText(eventEntry.getTitleArticle());
-            entryNewTitle.setText(eventEntry.getTitleArticle());
+            String s = eventEntry.getTitleArticle();
+            if (!TextUtils.isEmpty(s)) {
+                if (s.indexOf("Re:") != 0) s = "Re:" + s;
+                entryNewTitle.setText(s);
+            }
             /*
             String s = eventEntry.getTitleArticle();
             if (s.length() > 20)

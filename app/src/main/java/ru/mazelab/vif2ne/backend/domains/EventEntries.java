@@ -39,6 +39,7 @@ public class EventEntries {
 
     public static final String TABLE_NAME = "events";
     private static final String LOG_TAG = "EventEntries";
+    private static final long MAX_DB_RECORDS = 5000;
 
     protected ArrayList<Long> lastLoadedIds;
 
@@ -61,6 +62,12 @@ public class EventEntries {
         refreshDate = new Date();
     }
 
+    public long packDb() {
+        SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
+        String lastEventDB = Long.toString(lastEvent - MAX_DB_RECORDS);
+        return db.delete("event", "(id < ? and favorite = 0) or (deleted = 1) or (title=\"root\" and author = \"vif2\")", new String[]{lastEventDB});
+    }
+
     public long load() {
         Log.d(LOG_TAG, "sqlite start load:" + new Date().toString());
         int i = 0;
@@ -80,7 +87,7 @@ public class EventEntries {
                 reSetEventEntries();
                 return -1;
             }
-            c = readableDatabase.query("event", null, null, null, null, null, null);
+            c = readableDatabase.query("event", null, "deleted = 0", null, null, null, null);
             if (c.moveToFirst()) {
                 do {
                     EventEntry entry = new EventEntry();
@@ -139,6 +146,8 @@ public class EventEntries {
             } finally {
                 db.endTransaction();
             }
+            long cntDelete = packDb();
+            Log.d(LOG_TAG, "delete records:" + cntDelete);
         } finally {
             Log.d(LOG_TAG, "sqlite end save:" + new Date().toString() + " size:" + i);
         }
@@ -160,6 +169,9 @@ public class EventEntries {
             for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
                 EventEntry entry = it.next();
                 if (entry.getArtNo() == eventEntry.getArtNo()) {
+                    EventEntry parent = getByArtNo(entry.getArtParent());
+                    if (parent != null && parent.getChildEventEntries() != null)
+                        parent.getChildEventEntries().remove(entry);
                     entry.setArtParent(eventEntry.getArtParent());
                     Log.d(LOG_TAG, "parent:" + entry);
                     return;
@@ -183,6 +195,9 @@ public class EventEntries {
         Log.d(LOG_TAG, "eventEntries size:" + eventEntries.size());
         for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
             EventEntry entry = it.next();
+            if (entry.isDeleted()) {
+                Log.d(LOG_TAG, "deleted: " + entry.toString());
+            }
             for (Iterator<EventEntry> itSub = eventEntries.iterator(); itSub.hasNext(); ) {
                 EventEntry subEntry = itSub.next();
                 if (entry.getArtParent() == subEntry.getArtNo()) {
@@ -240,7 +255,8 @@ public class EventEntries {
             try {
                 EventEntry entry = it.next();
                 entry.setLevel(level);
-                events.add(entry);
+                if (!(entry.titleArticle.indexOf("root") == 0))
+                    events.add(entry);
                 loadChildEventEntriesWithTree(events, entry, level);
             } catch (Exception e) {
                 Log.d(LOG_TAG, "level error: " + level + " " + eventEntry.getChildEventEntries().toString());

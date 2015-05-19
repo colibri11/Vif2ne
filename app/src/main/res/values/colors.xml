@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-        <color name="vif_light">#eae3c0</color>
-        <color name="vif_dark">#eae3c0</color>
-        <color name="vif_alt">#a1ac9e</color>
+            <color name="vif_light">#eee9cf</color>
+            <color name="vif_dark">#eae3c0</color>
     -->
-    <color name="vif_light">@color/md_brown_200</color>
-    <color name="vif_dark">@color/md_brown_400</color>
-    <color name="vif_alt">@color/md_grey_600</color>
+        <color name="vif_alt">#a1ac9e</color>
+    <color name="vif_light">@color/tab_even</color>
+    <color name="vif_dark">@color/vif_alt</color>
+    <!--
+        <color name="vif_light">@color/md_brown_200</color>
+        <color name="vif_dark">@color/md_brown_400</color>
+        <color name="vif_alt">@color/md_grey_600</color>
+    -->
 
-    <color name="tab_odd">@color/md_brown_50</color>
-    <color name="tab_even">@color/md_brown_100</color>
+    <!--
+        <color name="tab_odd">@color/md_brown_50</color>
+        <color name="tab_even">@color/md_brown_100</color>
+    -->
+    <color name="tab_odd">#eee9cf</color>
+    <color name="tab_even">#eae3c0</color>
 
     <color name="transparent">#00000000</color>
 

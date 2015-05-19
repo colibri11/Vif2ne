@@ -109,7 +109,6 @@ public class MainActivity extends BaseActivity {
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
 */
-
         initBottomToolbar();
 
     }

@@ -25,6 +25,7 @@ public class Article extends HashMap<String, String> {
 
     }
 
+
     public long getId() {
         return id;
     }
@@ -39,7 +40,7 @@ public class Article extends HashMap<String, String> {
                 result.append("&");
             result.append(URLEncoder.encode(entry.getKey(), CHARSET));
             result.append("=");
-            result.append(URLEncoder.encode(new String(entry.getValue().getBytes(), "windows-1251"), CHARSET));
+            result.append(URLEncoder.encode(new String(entry.getValue().replace("\"", "&quot;").getBytes(), "windows-1251"), CHARSET));
         }
         return result.toString();
     }

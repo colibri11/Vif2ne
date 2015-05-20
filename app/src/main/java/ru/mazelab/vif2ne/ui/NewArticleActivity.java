@@ -1,17 +1,24 @@
 package ru.mazelab.vif2ne.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.webkit.HttpAuthHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.jsoup.Jsoup;
+
 import ru.mazelab.vif2ne.R;
 import ru.mazelab.vif2ne.backend.LocalUtils;
+import ru.mazelab.vif2ne.backend.RemoteService;
 import ru.mazelab.vif2ne.backend.domains.Article;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
 import ru.mazelab.vif2ne.backend.tasks.PostArticleTask;
@@ -46,7 +53,10 @@ public class NewArticleActivity extends BaseActivity {
     protected EditText entryNewTitle, entryEditArticle;
     protected CheckBox entryToRoot;
 
-    protected Button postAction, previewAction;
+    protected LinearLayout editArticleLayout;
+    protected WebView webView;
+
+    protected Button postAction, previewAction, clearAction;
 
 
     @Override
@@ -64,21 +74,47 @@ public class NewArticleActivity extends BaseActivity {
 
         previewAction = (Button) findViewById(R.id.preview_action);
         postAction = (Button) findViewById(R.id.post_action);
+        clearAction = (Button) findViewById(R.id.clear_action);
+
+        editArticleLayout = (LinearLayout) findViewById(R.id.edit_article_layout);
+        webView = (WebView) findViewById(R.id.web_view);
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBlockNetworkLoads(false);
+        webView.getSettings().setAllowContentAccess(true);
+        webView.getSettings().setBlockNetworkImage(false);
+        webView.getSettings().setLoadsImagesAutomatically(true);
+        webView.setBackgroundColor(getResources().getColor(R.color.vif_dark));
+
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+                handler.proceed(remoteService.getUserName(), remoteService.getPasswd());
+            }
+        });
+
+        clearAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                entryNewTitle.setText("");
+                entryEditArticle.setText("");
+                entryToRoot.setChecked(false);
+            }
+        });
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Article article = new Article(eventEntry.getArtNo(),
-                        entryNewTitle.getText().toString(),
-                        entryEditArticle.getText().toString(),
-                        entryToRoot.isChecked()
-                );
-                new PostArticleTask(session, article) {
+                new PostArticleTask(session, RemoteService.URL_POST, setArticle()) {
                     @Override
                     public void goSuccess(Object result) {
                         session.setWebContent((String) result);
                         session.loadTree(session.getEventEntries().getLastEvent());
                         Toast.makeText(getApplicationContext(), "refreshing", Toast.LENGTH_SHORT).show();
-                        finish();
+                        Log.d(LOG_TAG, (String) result);
+                        editArticleLayout.setVisibility(View.GONE);
+                        webView.setVisibility(View.VISIBLE);
+                        webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
+//                        finish();
                     }
                 }.execute((Void) null);
             }
@@ -86,21 +122,29 @@ public class NewArticleActivity extends BaseActivity {
         previewAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Article article = new Article(eventEntry.getArtNo(),
-                        entryNewTitle.getText().toString(),
-                        entryEditArticle.getText().toString(),
-                        entryToRoot.isChecked()
-                );
-                session.setArticle(article);
-                Intent intent = new Intent(session.getCurrentActivity(), WebActivity.class);
-                session.getCurrentActivity().startActivity(intent);
-
+                new PostArticleTask(session, RemoteService.URL_POST_PREVIEW, setArticle()) {
+                    @Override
+                    public void goSuccess(Object result) {
+                        session.setWebContent((String) result);
+                        session.loadTree(session.getEventEntries().getLastEvent());
+                        Toast.makeText(getApplicationContext(), "refreshing", Toast.LENGTH_SHORT).show();
+                        editArticleLayout.setVisibility(View.GONE);
+                        Log.d(LOG_TAG, (String) result);
+                        webView.setVisibility(View.VISIBLE);
+                        webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST_PREVIEW.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
+                    }
+                }.execute((Void) null);
             }
         });
+        bindOne();
     }
 
     @Override
     protected void bind() {
+
+    }
+
+    public void bindOne() {
         if (eventEntry != null) {
             entryDateView.setText(LocalUtils.formatDateTime(this, eventEntry.getDate()));
             entryUserNameView.setText("К:" + eventEntry.getAuthor());
@@ -110,15 +154,28 @@ public class NewArticleActivity extends BaseActivity {
                 if (s.indexOf("Re:") != 0) s = "Re:" + s;
                 entryNewTitle.setText(s);
             }
-            /*
-            String s = eventEntry.getTitleArticle();
-            if (s.length() > 20)
-                s = s.substring(0, 19);
-            entryNewTitle.setText(String.format("Re: %s...", s));
-            */
-//            s = eventEntry.getArticle();
-//            entryEditArticle.setText(s);
+            if (eventEntry.getArticle() != null) {
+                entryEditArticle.setText(">" + Jsoup.parse(eventEntry.getArticle().replace("<BR>", "*%*")).text().replace("*%*", "\n>"));
+            } else {
+                entryEditArticle.setText("");
+            }
         }
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (webView.getVisibility() == View.VISIBLE) {
+            webView.setVisibility(View.GONE);
+            editArticleLayout.setVisibility(View.VISIBLE);
+        } else
+            super.onBackPressed();
+    }
+
+    public Article setArticle() {
+        return new Article(eventEntry.getArtNo(),
+                entryNewTitle.getText().toString(),
+                entryEditArticle.getText().toString(),
+                entryToRoot.isChecked()
+        );
     }
 }

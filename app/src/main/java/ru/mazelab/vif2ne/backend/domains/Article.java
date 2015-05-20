@@ -9,7 +9,6 @@ import java.util.Map;
  * Created by serg on 17.05.15.
  */
 public class Article extends HashMap<String, String> {
-    private static final String CHARSET = "windows-1251";
     private long id;
 
 
@@ -25,9 +24,23 @@ public class Article extends HashMap<String, String> {
 
     }
 
-
     public long getId() {
         return id;
+    }
+
+
+    public String encode(String value) {
+        try {
+            return URLEncoder.encode(
+                    new String(value
+                            .replace("\"", "&quot;")
+//                            .replace(">", "&gt;")
+//                            .replace("<", "&lt;")
+                            .getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public String getQuery() throws UnsupportedEncodingException {
@@ -38,9 +51,9 @@ public class Article extends HashMap<String, String> {
                 first = false;
             else
                 result.append("&");
-            result.append(URLEncoder.encode(entry.getKey(), CHARSET));
+            result.append(encode(entry.getKey()));
             result.append("=");
-            result.append(URLEncoder.encode(new String(entry.getValue().replace("\"", "&quot;").getBytes(), "windows-1251"), CHARSET));
+            result.append(encode(entry.getValue()));
         }
         return result.toString();
     }

@@ -63,8 +63,8 @@ public class WebActivity extends BaseActivity {
                 value = URLEncoder.encode(
                         new String(value
                                 .replace("\"","&quot;")
-                             //   .replace(">","&gt;")
-                             //   .replace("<","&lt;")
+                                        //     .replace(">","&gt;")
+//                                .replace("<","&lt;")
                                 .getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -77,7 +77,7 @@ public class WebActivity extends BaseActivity {
         Log.d(LOG_TAG, html);
 
         webView.loadData(html, "text/html; charset=windows-1251", null);
-        webView.setBackgroundColor(getResources().getColor(R.color.transparent));
+        webView.setBackgroundColor(getResources().getColor(R.color.vif_dark));
 
         webView.setWebViewClient(new WebViewClient() {
             @Override

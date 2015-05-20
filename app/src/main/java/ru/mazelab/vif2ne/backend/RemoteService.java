@@ -1,7 +1,5 @@
 package ru.mazelab.vif2ne.backend;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -89,22 +87,19 @@ import ru.mazelab.vif2ne.throwable.ApplicationException;
  *
  */
 
-/**
- * ответ
- * <p/>
- * http://vif2ne.ru/nvk/forum/0/security/replymsg/2698188
- */
 public class RemoteService {
 
     // private static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";
-    public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
-    public static final String URL_POST = "http://10.253.1.203:8080/post/test";
+//    public static final String URL_POST = "http://10.253.1.203:8080/post/test";
+    public static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
     public static final String URL_POST_PREVIEW = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
+    public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
+    public static final String URL_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
+    public static final String URL_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
     private static final String LOG_TAG = "RemoteService";
-    private static final String URL_NAME_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
-    private static final String URL_NAME_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
-    private static final String COOKIE_SET = "Set-Cookie";
     private static final String URL_ACCESS = "http://vif2ne.ru/nvk/forum/security";
+
+    private static final String COOKIE_SET = "Set-Cookie";
     private static final String LOGIN_NAME = "login";
     private static final String PASSWD = "dwp";
     private String basicAuth;
@@ -119,22 +114,6 @@ public class RemoteService {
         CookieHandler.setDefault(cookieManager);
         setCookies = new ArrayList<>();
         basicAuth = "";
-    }
-
-    void saveText(SharedPreferences sPref) {
-        //  SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(LOGIN_NAME, getUserName());
-        ed.putString(PASSWD, Base64.encodeToString(basicAuth.getBytes(), Base64.DEFAULT));
-        ed.apply();
-    }
-
-    void loadText(SharedPreferences sPref) {
-        // SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        setUserName(sPref.getString(LOGIN_NAME, ""));
-        String codepwd = sPref.getString(PASSWD, "");
-        if (!TextUtils.isEmpty(codepwd))
-            basicAuth = new String(Base64.decode(codepwd.getBytes(), Base64.DEFAULT));
     }
 
     public boolean isAuthenticated() {
@@ -165,12 +144,12 @@ public class RemoteService {
 
 
     public void addCookie(String cookie) {
-        String cookiename = cookie.substring(0, cookie.indexOf("="));
+        String cookieName = cookie.substring(0, cookie.indexOf("="));
         int i = 0;
         int ii = -1;
         for (String s : setCookies) {
             String f = s.substring(0, s.indexOf("="));
-            if (f.equals(cookiename)) {
+            if (f.equals(cookieName)) {
                 ii = i;
             }
             i++;
@@ -192,16 +171,17 @@ public class RemoteService {
         }
     }
 
-    public String postArticle(Article article) throws IOException, ApplicationException {
+    public String postArticle(String urlPost, Article article) throws IOException, ApplicationException {
         if (article == null) return null;
         String qry = article.getQuery();
-        URL url = new URL(String.format(URL_POST, article.getId()));
+        URL url = new URL(String.format(urlPost, article.getId()));
         Log.d(LOG_TAG, url.toString());
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         auth(connection);
         connection.setDoOutput(true);
-        connection.setRequestProperty("Referer", String.format(URL_POST_REFERER, article.getId()));
         connection.setFixedLengthStreamingMode(qry.getBytes().length);
+        connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+        connection.setRequestProperty("Referer", String.format(URL_POST_REFERER, article.getId()));
         Log.d(LOG_TAG, "post:" + article.getQuery());
         try {
             OutputStream out = new BufferedOutputStream(connection.getOutputStream());
@@ -209,9 +189,8 @@ public class RemoteService {
             out.flush();
             out.close();
             String preview = NetUtils.readStreamToString(connection.getInputStream(), "windows-1251");
-
             int responseCode = connection.getResponseCode();
-            Log.d(LOG_TAG, "rc:" + preview + " " + responseCode);
+            Log.d(LOG_TAG, "rc:" + responseCode + " html:" + preview);
             if (responseCode == 200)
                 return preview;
             else
@@ -228,8 +207,6 @@ public class RemoteService {
     public void login(String user, String passwd) throws IOException, ApplicationException {
         URL url = new URL(URL_ACCESS);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-
         setUserName("");
         basicAuth = "Basic " + Base64.encodeToString((user + ":" + passwd).getBytes(), Base64.DEFAULT);
         connection.setRequestProperty("Authorization", basicAuth);
@@ -243,25 +220,26 @@ public class RemoteService {
             Log.d(LOG_TAG, "responseCode:" + responseCode);
             switch (responseCode) {
                 case 200: {
+                    setUserName(user);
+                    setPasswd(passwd);
                     break;
                 }
                 case 401: {
+                    basicAuth = "";
                     throw new ApplicationException("Неверный пароль");
                 }
                 default: {
+                    basicAuth = "";
                     throw new ApplicationException("Проверьте наличие сети HTTP код ошибки:" + Integer.toString(responseCode));
                 }
             }
-            setUserName(user);
-            setPasswd(passwd);
-
         } finally {
             connection.disconnect();
         }
     }
 
     public Boolean loadEventEntries(EventEntries entries, long lastEventId) throws IOException, XmlPullParserException, ParseException, ApplicationException {
-        URL url = new URL(String.format(URL_NAME_EVENT_LOG, lastEventId));
+        URL url = new URL(String.format(URL_EVENT_LOG, lastEventId));
         Log.d(LOG_TAG, url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         auth(urlConnection);
@@ -271,14 +249,13 @@ public class RemoteService {
 //            return NetUtils.readStreamToString(in, "windows-1251");
         } finally {
             resetCookie(urlConnection);
-
             urlConnection.disconnect();
         }
 
     }
 
     public String loadEventsXML(long lastEventId) throws IOException, ApplicationException {
-        URL url = new URL(String.format(URL_NAME_EVENT_LOG, lastEventId));
+        URL url = new URL(String.format(URL_EVENT_LOG, lastEventId));
         Log.d(LOG_TAG, url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         auth(urlConnection);
@@ -292,7 +269,7 @@ public class RemoteService {
     }
 
     public String loadArticle(long articleNo) throws IOException, ApplicationException {
-        URL url = new URL(String.format(URL_NAME_ARTICLE, articleNo));
+        URL url = new URL(String.format(URL_ARTICLE, articleNo));
         Log.d(LOG_TAG, url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         auth(urlConnection);
@@ -301,7 +278,6 @@ public class RemoteService {
             return NetUtils.readStreamToString(in, "windows-1251");
         } finally {
             resetCookie(urlConnection);
-
             urlConnection.disconnect();
         }
     }

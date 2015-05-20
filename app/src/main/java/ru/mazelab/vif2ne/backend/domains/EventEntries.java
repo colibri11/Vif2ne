@@ -156,39 +156,34 @@ public class EventEntries {
     public void addFromRemote(EventEntry eventEntry) {
         if (eventEntry.getArtNo() == 0) return;
         if (!TextUtils.isEmpty(eventEntry.eaType) && eventEntry.eaType.equals("fix")) {
-            for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
-                EventEntry entry = it.next();
-                if (entry.getArtNo() == eventEntry.getArtNo()) {
-                    entry.setFixed(Integer.parseInt(eventEntry.getEaMode()));
-                    return;
-                }
-
+            EventEntry entry = getByArtNo(eventEntry.getArtNo());
+            if (entry != null) {
+                entry.setFixed(Integer.parseInt(eventEntry.getEaMode()));
+                return;
             }
         }
         if (!TextUtils.isEmpty(eventEntry.eaType) && eventEntry.eaType.equals("parent")) {
-            for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
-                EventEntry entry = it.next();
-                if (entry.getArtNo() == eventEntry.getArtNo()) {
-                    EventEntry parent = getByArtNo(entry.getArtParent());
-                    if (parent != null && parent.getChildEventEntries() != null)
-                        parent.getChildEventEntries().remove(entry);
-                    entry.setArtParent(eventEntry.getArtParent());
-                    Log.d(LOG_TAG, "parent:" + entry);
-                    return;
-                }
+            EventEntry entry = getByArtNo(eventEntry.getArtNo());
+            if (entry != null) {
+                EventEntry parent = getByArtNo(entry.getArtParent());
+                if (parent != null && parent.getChildEventEntries() != null)
+                    parent.getChildEventEntries().remove(entry);
+                entry.setArtParent(eventEntry.getArtParent());
+                return;
             }
         }
         if (!TextUtils.isEmpty(eventEntry.eaType) && eventEntry.eaType.equals("del")) {
-            for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
-                EventEntry entry = it.next();
-                if (entry.getArtNo() == eventEntry.getArtNo()) {
-                    entry.setDeleted(true);
-                    Log.d(LOG_TAG, "del:" + entry);
-                    return;
-                }
+            EventEntry entry = getByArtNo(eventEntry.getArtNo());
+            if (entry != null) {
+                entry.setDeleted(true);
+                Log.d(LOG_TAG, "del:" + entry);
+                return;
             }
         }
-        eventEntries.add(eventEntry);
+        if (eventEntry.getTitleArticle().equals("root")) {
+            Log.d(LOG_TAG, "article not found:" + eventEntry);
+        } else if (eventEntry.getEaType() != null && eventEntry.getEaType().equals("add"))
+            eventEntries.add(eventEntry);
     }
 
     public void makeTree(ArrayList<Long> idParse) {

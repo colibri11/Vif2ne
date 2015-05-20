@@ -57,7 +57,6 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
             "    <style type=\"text/css\">\n" +
             "        body {\n" +
             "        font-size: 11pt;\n" +
-            "        background-color: #d7ccc8\n" +
             "        }\n" +
             "    </style>\n" +
             "</head>\n" +
@@ -159,9 +158,6 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
     public void bind(EventEntry eventEntry) {
         int position = getAdapterPosition();
         eventEntry.setPosition(position);
-        if (!TextUtils.isEmpty(eventEntry.getTitleArticle()) && eventEntry.getTitleArticle().indexOf("root") == 0) {
-            Log.d(LOG_TAG, "root!!!!" + eventEntry);
-        }
         mainWebView.setTag(eventEntry);
         entryFavorites.setTag(eventEntry);
         entryLayout.setTag(eventEntry);

@@ -12,10 +12,12 @@ import ru.mazelab.vif2ne.throwable.ApplicationException;
 public abstract class PostArticleTask extends AbstractTask {
 
     private Article article;
+    private String urlPost;
 
-    protected PostArticleTask(Session session, Article article) {
+    protected PostArticleTask(Session session, String urlPost, Article article) {
         super(session);
         this.article = article;
+        this.urlPost = urlPost;
     }
 
 
@@ -27,7 +29,7 @@ public abstract class PostArticleTask extends AbstractTask {
     @Override
     protected Object remoteCall() throws ApplicationException {
         try {
-            return remoteService.postArticle(article);
+            return remoteService.postArticle(urlPost, article);
         } catch (IOException e) {
             e.printStackTrace();
             throw new ApplicationException(e.getMessage());

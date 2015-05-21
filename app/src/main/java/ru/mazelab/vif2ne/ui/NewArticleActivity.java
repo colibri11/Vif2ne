@@ -23,6 +23,7 @@ import ru.mazelab.vif2ne.backend.LocalUtils;
 import ru.mazelab.vif2ne.backend.RemoteService;
 import ru.mazelab.vif2ne.backend.domains.Article;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
+import ru.mazelab.vif2ne.backend.tasks.PostArticleTask;
 
 /*
  * Copyright (C) 2015 The Android Open Source Project
@@ -111,46 +112,44 @@ public class NewArticleActivity extends BaseActivity {
                 entryNewTitle.setText("");
                 entryEditArticle.setText("");
                 entryToRoot.setChecked(false);
+                entryNewTitle.requestFocus();
             }
         });
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                webPost();
-/*
+//                webPost();
+
                 new PostArticleTask(session, RemoteService.URL_POST, setArticle()) {
                     @Override
                     public void goSuccess(Object result) {
                         session.setWebContent((String) result);
                         session.loadTree(session.getEventEntries().getLastEvent());
-                        Toast.makeText(getApplicationContext(), "refreshing", Toast.LENGTH_SHORT).show();
-                        Log.d(LOG_TAG, (String) result);
-                        editArticleLayout.setVisibility(View.GONE);
-                        webView.setVisibility(View.VISIBLE);
-                        webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.refreshing_tree), Toast.LENGTH_SHORT).show();
+//                        editArticleLayout.setVisibility(View.GONE);
+//                        webView.setVisibility(View.VISIBLE);
+//                        webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
+                        finish();
                     }
                 }.execute((Void) null);
-*/
             }
         });
         previewAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                webPreview();
-/*
+//                webPreview();
                 new PostArticleTask(session, RemoteService.URL_POST_PREVIEW, setArticle()) {
                     @Override
                     public void goSuccess(Object result) {
                         session.setWebContent((String) result);
                         session.loadTree(session.getEventEntries().getLastEvent());
-                        Toast.makeText(getApplicationContext(), "refreshing", Toast.LENGTH_SHORT).show();
                         editArticleLayout.setVisibility(View.GONE);
-                        Log.d(LOG_TAG, (String) result);
                         webView.setVisibility(View.VISIBLE);
-                        webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST_PREVIEW.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
+                        Log.d(LOG_TAG, "html" + (String) result);
+                        webView.loadDataWithBaseURL(RemoteService.URL_POST_PREVIEW.substring(0, RemoteService.URL_POST_PREVIEW.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
                     }
                 }.execute((Void) null);
-*/
+
             }
         });
         bindOne();

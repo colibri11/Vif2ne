@@ -34,6 +34,7 @@ public class Article extends HashMap<String, String> {
             return URLEncoder.encode(
                     new String(value
                             .replace("\"", "&quot;")
+                            .replace("\n", "\r\n")
 //                            .replace(">", "&gt;")
 //                            .replace("<", "&lt;")
                             .getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");

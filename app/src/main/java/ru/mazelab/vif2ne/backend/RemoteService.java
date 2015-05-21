@@ -91,7 +91,8 @@ public class RemoteService {
 
     // private static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";
 //    public static final String URL_POST = "http://10.253.1.203:8080/post/test";
-    public static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
+//    public static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
+    public static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";
     public static final String URL_POST_PREVIEW = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
     public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
     public static final String URL_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";

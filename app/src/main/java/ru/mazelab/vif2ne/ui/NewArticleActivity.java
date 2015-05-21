@@ -16,12 +16,13 @@ import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 
+import java.util.Map;
+
 import ru.mazelab.vif2ne.R;
 import ru.mazelab.vif2ne.backend.LocalUtils;
 import ru.mazelab.vif2ne.backend.RemoteService;
 import ru.mazelab.vif2ne.backend.domains.Article;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
-import ru.mazelab.vif2ne.backend.tasks.PostArticleTask;
 
 /*
  * Copyright (C) 2015 The Android Open Source Project
@@ -57,6 +58,7 @@ public class NewArticleActivity extends BaseActivity {
     protected WebView webView;
 
     protected Button postAction, previewAction, clearAction;
+    protected Boolean post;
 
 
     @Override
@@ -85,8 +87,18 @@ public class NewArticleActivity extends BaseActivity {
         webView.getSettings().setBlockNetworkImage(false);
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.setBackgroundColor(getResources().getColor(R.color.vif_dark));
-
+        post = false;
         webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (post) {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.refreshing_tree), Toast.LENGTH_SHORT).show();
+                    session.loadTree(session.getEventEntries().getLastEvent());
+                    post = false;
+                }
+            }
+
             @Override
             public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
                 handler.proceed(remoteService.getUserName(), remoteService.getPasswd());
@@ -104,6 +116,8 @@ public class NewArticleActivity extends BaseActivity {
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                webPost();
+/*
                 new PostArticleTask(session, RemoteService.URL_POST, setArticle()) {
                     @Override
                     public void goSuccess(Object result) {
@@ -114,14 +128,16 @@ public class NewArticleActivity extends BaseActivity {
                         editArticleLayout.setVisibility(View.GONE);
                         webView.setVisibility(View.VISIBLE);
                         webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
-//                        finish();
                     }
                 }.execute((Void) null);
+*/
             }
         });
         previewAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                webPreview();
+/*
                 new PostArticleTask(session, RemoteService.URL_POST_PREVIEW, setArticle()) {
                     @Override
                     public void goSuccess(Object result) {
@@ -134,9 +150,52 @@ public class NewArticleActivity extends BaseActivity {
                         webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST_PREVIEW.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
                     }
                 }.execute((Void) null);
+*/
             }
         });
         bindOne();
+    }
+
+    protected void webPost() {
+        Article article = setArticle();
+        String html = "<html>" +
+                "\n<body onLoad=\"document.getElementById('form').submit()\">" +
+                "\n<form id=\"form\" target=\"_self\" accept-charset=\"windows-1251\" enctype=\"application/x-www-form-urlencoded\" method=\"POST\" action=\"" +
+                String.format(RemoteService.URL_POST, article.getId())
+                + "\">";
+        for (Map.Entry<String, String> entry : article.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            value = article.encode(value);
+            html = html + "\n<input type=\"hidden\" name=\"" + key + "\" value=\"" + value + "\" />";
+        }
+        html = html + "\n</form>\n</body>\n</html>";
+        Log.d(LOG_TAG, html);
+        post = true;
+        webView.loadData(html, "text/html; charset=windows-1251", null);
+        webView.setVisibility(View.VISIBLE);
+        editArticleLayout.setVisibility(View.GONE);
+    }
+
+    protected void webPreview() {
+        Article article = setArticle();
+        String html = "<html>" +
+                "\n<body onLoad=\"document.getElementById('form').submit()\">" +
+                "\n<form id=\"form\" target=\"_self\" accept-charset=\"windows-1251\" enctype=\"application/x-www-form-urlencoded\" method=\"POST\" action=\"" +
+                String.format(RemoteService.URL_POST_PREVIEW, article.getId())
+                + "\">";
+        for (Map.Entry<String, String> entry : article.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            value = article.encode(value);
+            html = html + "\n<input type=\"hidden\" name=\"" + key + "\" value=\"" + value + "\" />";
+        }
+        html = html + "\n</form>\n</body>\n</html>";
+        Log.d(LOG_TAG, html);
+        post = false;
+        webView.loadData(html, "text/html; charset=windows-1251", null);
+        webView.setVisibility(View.VISIBLE);
+        editArticleLayout.setVisibility(View.GONE);
     }
 
     @Override

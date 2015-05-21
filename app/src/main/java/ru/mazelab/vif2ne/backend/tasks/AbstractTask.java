@@ -31,7 +31,7 @@ import ru.mazelab.vif2ne.backend.RemoteService;
 import ru.mazelab.vif2ne.throwable.ApplicationException;
 
 
-public abstract class AbstractTask extends AsyncTask<Void, Void, Object> {
+public abstract class AbstractTask extends AsyncTask<Void, Object, Object> {
 
 
     public static final Integer TASK_START = 0;

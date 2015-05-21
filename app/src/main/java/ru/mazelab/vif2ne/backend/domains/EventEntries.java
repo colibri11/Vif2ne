@@ -258,6 +258,18 @@ public class EventEntries {
         }
     }
 
+    public static int loadChildCountEventEntriesWithTree(EventEntry eventEntry, int cnt) {
+        if (cnt > 1000) return cnt;
+        for (EventEntry entry : eventEntry.getChildEventEntries()) {
+            try {
+                cnt++;
+                cnt = cnt + loadChildCountEventEntriesWithTree(entry, 0);
+            } catch (Exception e) {
+                break;
+            }
+        }
+        return cnt;
+    }
     public void loadMatchEventEntries(String matchString, ArrayList<EventEntry> events) {
         events.clear();
         for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {

@@ -53,6 +53,7 @@ public abstract class LoadArticleTreeTask extends AbstractTask {
                 if (TextUtils.isEmpty(eventEntry.getArticle()) && eventEntry.getSize() > 0) {
                     String result = "";
                     Thread.sleep(10);
+                    publishProgress(i);
                     result = remoteService.loadArticle(eventEntry.getArtNo());
                     eventEntry.setArticle(result);
                     eventEntry.save(session.getDbHelper().getWritableDatabase());

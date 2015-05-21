@@ -21,7 +21,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@color/vif_light">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_top"
@@ -41,7 +42,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/main_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/vif_light" />
     </LinearLayout>
 
     <ProgressBar
@@ -49,15 +51,16 @@
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/transparent"
         android:indeterminate="true"
-        android:indeterminateBehavior="repeat" />
+        android:indeterminateOnly="false"
+        android:indeterminateBehavior="cycle" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/transparent"
         android:minHeight="?attr/actionBarSize" />
 
 </LinearLayout>

@@ -26,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +55,7 @@ public class MainActivity extends BaseActivity {
     protected SearchView mSearchView;
     protected MenuItem menuItemDownload;
     private EventEntry parentEventEntry;
+    private ProgressBar progressBar;
     private Toolbar toolbarBottom;
     private int mode;
 
@@ -107,6 +109,7 @@ public class MainActivity extends BaseActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
 */
         initBottomToolbar();
+        progressBar = (ProgressBar) findViewById(R.id.progress);
 
     }
 
@@ -139,7 +142,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void showNonBlockingProgress() {
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress);
+
         if (progressBar != null) {
             if (session.getTasksContainer().size() > 0) {
                 Log.d(LOG_TAG, "show progress");
@@ -371,7 +374,23 @@ public class MainActivity extends BaseActivity {
     }
 
     private void loadTreeArticles() {
+        int i =0;
+        for (EventEntry eventEntry : navigatorEventEntries) {
+            if (TextUtils.isEmpty(eventEntry.getArticle()) && eventEntry.getSize() > 0) {
+                i ++;
+            }
+        }
+        progressBar.setMax(i);
+        progressBar.setProgress(0);
+        progressBar.setIndeterminate(false);
         new LoadArticleTreeTask(session, navigatorEventEntries) {
+            @Override
+            protected void onProgressUpdate(Object... values) {
+                progressBar.setProgress((Integer) values[0]);
+          //      progressBar.refreshDrawableState();
+                super.onProgressUpdate(values);
+            }
+
             @Override
             public void goSuccess(Object result) {
                 Toast.makeText(getApplicationContext(), String.format(
@@ -384,6 +403,7 @@ public class MainActivity extends BaseActivity {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 setDownloadMenuItemEnabled(true);
+                progressBar.setIndeterminate(true);
             }
         }.execute((Void) null);
     }

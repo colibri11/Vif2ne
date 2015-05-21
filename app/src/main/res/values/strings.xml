@@ -58,4 +58,5 @@
     <string name="preview_action">Смотреть</string>
     <string name="clear_action">Чистить</string>
     <string name="refreshing_tree">Обновляется дерево</string>
+    <string name="bytes">( %d байт )</string>
 </resources>

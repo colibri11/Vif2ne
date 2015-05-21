@@ -36,6 +36,7 @@ import ru.mazelab.vif2ne.R;
 import ru.mazelab.vif2ne.Session;
 import ru.mazelab.vif2ne.backend.ExtHtmlTagHandler;
 import ru.mazelab.vif2ne.backend.LocalUtils;
+import ru.mazelab.vif2ne.backend.domains.EventEntries;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
 import ru.mazelab.vif2ne.backend.tasks.LoadArticleTask;
 
@@ -206,9 +207,10 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
             }
         }
 
-        entryChild.setText(Integer.toString(eventEntry.getChildEventEntries().size()));
+        // entryChild.setText(Integer.toString(eventEntry.getChildEventEntries().size()));
+        entryChild.setText(Integer.toString(EventEntries.loadChildCountEventEntriesWithTree(eventEntry,0)));
         entryDate.setText(LocalUtils.formatDateTime(view.getContext(), eventEntry.getDate()));
-        entrySize.setText("(" + eventEntry.getSize() + " b)");
+        entrySize.setText(String.format(view.getResources().getString(R.string.bytes),eventEntry.getSize()));
         entryUserName.setText(eventEntry.getAuthor());
         if (eventEntry.getTitleArticle() != null) {
 /*

@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2015 by Sergey Omarov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Created by serg 21.05.15 20:19
+ */
+
 package ru.mazelab.vif2ne.ui.adapter;
 
 import android.content.Intent;
@@ -20,27 +38,6 @@ import ru.mazelab.vif2ne.backend.ExtHtmlTagHandler;
 import ru.mazelab.vif2ne.backend.LocalUtils;
 import ru.mazelab.vif2ne.backend.domains.EventEntry;
 import ru.mazelab.vif2ne.backend.tasks.LoadArticleTask;
-
-/*
- * Copyright (C) 2015 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * Created by Colibri  15.05.15 23:52
- * EntryRecyclerViewHolder.java
- *
- *
- */
 
 public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
 

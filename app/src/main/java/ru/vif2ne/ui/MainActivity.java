@@ -19,10 +19,7 @@
 package ru.vif2ne.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,18 +32,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
-import ru.vif2ne.backend.tasks.LoginTask;
-import ru.vif2ne.throwable.ApplicationException;
 import ru.vif2ne.ui.adapter.EntryRecyclerAdapter;
 
 public class MainActivity extends BaseActivity {
@@ -61,11 +54,11 @@ public class MainActivity extends BaseActivity {
     protected MenuItem searchMenuItem;
     protected SearchView mSearchView;
     protected MenuItem menuItemDownload;
+    protected MainActivity activity;
     private EventEntry parentEventEntry;
     private ProgressBar progressBar;
     private Toolbar toolbarBottom;
     private int mode;
-
 
     @Override
     protected void onTaskAction(Intent intent, String taskClassName, Integer mode) {
@@ -118,26 +111,12 @@ public class MainActivity extends BaseActivity {
         initBottomToolbar();
         progressBar = (ProgressBar) findViewById(R.id.progress);
 
-        loadPrefs();
+        session.loadPrefs(!session.getRemoteService().isAuthenticated());
+        this.activity = this;
 
     }
 
-    protected void loadPrefs() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("pref_username", "");
-        String passw = prefs.getString("pref_password", "");
-        session.setDetailView(prefs.getBoolean("pref_detail", false));
-        new LoginTask(session, username, passw) {
-            @Override
-            public void goSuccess(Object result) {
-                SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-                SharedPreferences.Editor ed = sPref.edit();
-                ed.putString(LoginDialog.LOGIN_NAME, getUser());
-                ed.apply();
-            }
-        }.execute((Void) null);
 
-    }
 
     @Override
     protected void bind() {
@@ -301,9 +280,11 @@ public class MainActivity extends BaseActivity {
                         break;
                     case R.id.bottom_menu_add:
                         if (!remoteService.isAuthenticated()) {
-                            intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
+                        /*    intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
                             intent.putExtra("goto", "add");
                             session.getCurrentActivity().startActivity(intent);
+                            */
+                            Toast.makeText(activity, getResources().getString(R.string.not_login), Toast.LENGTH_SHORT).show();
                         } else {
                             intent = new Intent(session.getCurrentActivity(), NewArticleActivity.class);
                             session.getCurrentActivity().startActivity(intent);
@@ -372,11 +353,12 @@ public class MainActivity extends BaseActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
-            case R.id.top_menu_auth:
+/*            case R.id.top_menu_auth:
                 session.navigate(null);
                 intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
                 session.getCurrentActivity().startActivity(intent);
                 break;
+ */
             case R.id.top_menu_preferences:
                 intent = new Intent(session.getCurrentActivity(), MainPreferences.class);
                 session.getCurrentActivity().startActivity(intent);

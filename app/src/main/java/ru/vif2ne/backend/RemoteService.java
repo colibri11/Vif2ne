@@ -180,7 +180,7 @@ public class RemoteService {
         auth(connection);
         connection.setDoOutput(true);
         connection.setFixedLengthStreamingMode(qry.getBytes().length);
-        connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+        connection.setRequestProperty("Content-type", "content=\"application/x-www-form-urlencoded\"; charset=windows-1251");
         connection.setRequestProperty("Referer", String.format(URL_POST_REFERER, article.getId()));
         Log.d(LOG_TAG, "post:" + article.getQuery());
         try {

@@ -142,7 +142,7 @@ public class NewArticleActivity extends BaseActivity {
                         session.loadTree(session.getEventEntries().getLastEvent());
                         editArticleLayout.setVisibility(View.GONE);
                         webView.setVisibility(View.VISIBLE);
-                        Log.d(LOG_TAG, "html" + (String) result);
+                        Log.d(LOG_TAG, "html:" + (String) result);
                         webView.loadDataWithBaseURL(RemoteService.URL_POST_PREVIEW.substring(0, RemoteService.URL_POST_PREVIEW.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
                     }
                 }.execute((Void) null);

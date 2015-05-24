@@ -46,15 +46,25 @@ public class Article extends HashMap<String, String> {
         return id;
     }
 
-
     public String encode(String value) {
         try {
             return URLEncoder.encode(
                     new String(value
                             .replace("\"", "&quot;")
                             .replace("\n", "\r\n")
-//                            .replace(">", "&gt;")
-//                            .replace("<", "&lt;")
+                            .getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public String encode1(String value) {
+        try {
+            return URLEncoder.encode(
+                    new String(value
+                            .replace("\"", "&quot;")
+                            .replace("\n", "\r\n")
                             .getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

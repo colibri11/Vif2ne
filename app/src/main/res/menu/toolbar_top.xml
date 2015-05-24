@@ -31,10 +31,4 @@
         android:orderInCategory="110"
         android:title="@string/menu_preferences"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/top_menu_auth"
-        android:icon="@drawable/ic_action_person_outline"
-        android:orderInCategory="110"
-        android:title="@string/menu_sign_in"
-        app:showAsAction="never" />
 </menu>

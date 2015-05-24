@@ -21,15 +21,26 @@ package ru.vif2ne.ui;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
+import ru.vif2ne.MainApplication;
 import ru.vif2ne.R;
+import ru.vif2ne.Session;
 
 /**
  * Created by serg on 24.05.15.
  */
 public class MainPreferences extends PreferenceActivity {
+    Session session;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        session = ((MainApplication) getApplication()).getSession();
         addPreferencesFromResource(R.xml.main_preferences);
+    }
+
+    @Override
+    protected void onDestroy() {
+        session.loadPrefs(true);
+        super.onDestroy();
     }
 }

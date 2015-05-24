@@ -85,8 +85,6 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
         signView = itemView.findViewById(R.id.replay_sign);
 
 
-
-
         entryFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,13 +145,13 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
 
     public void showArticle(EventEntry eventEntry) {
         if (TextUtils.isEmpty(eventEntry.getArticle())) return;
-        articleWOImages.setMaxLines(1000);
-        articleWOImages.setText(Html.fromHtml(eventEntry.getArticle()));
         if (eventEntry.getArticle().contains("<img ")) {
             articleWOImages.setVisibility(View.GONE);
             mainWebView.loadData(String.format(webContent, eventEntry.getArticle()), "text/html; charset=utf-8", null);
             mainWebView.setBackgroundColor(view.getResources().getColor(R.color.transparent));
         } else {
+            articleWOImages.setMaxLines(1000);
+            articleWOImages.setText(Html.fromHtml(eventEntry.getArticle()));
             articleWOImages.setVisibility(View.VISIBLE);
         }
     }
@@ -200,18 +198,21 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
                     showArticle(eventEntry);
                 }
             } else {
-                articleWOImages.setVisibility(View.VISIBLE);
-                if (!TextUtils.isEmpty(eventEntry.getArticle())) {
-              //      articleWOImages.setMaxLines(4);
-              //      articleWOImages.setLines(4);
-              //      articleWOImages.setEllipsize(TextUtils.TruncateAt.END);
-                    articleWOImages.setText(Html.fromHtml(eventEntry.getArticle()));
-                } else {
-                    if (eventEntry.getSize() > 0)
-                        articleWOImages.setText("...");
-                    else
-                        articleWOImages.setText("");
-                }
+                if (session.isDetailView()) {
+                    articleWOImages.setVisibility(View.VISIBLE);
+                    if (!TextUtils.isEmpty(eventEntry.getArticle())) {
+                        //      articleWOImages.setMaxLines(4);
+                        //      articleWOImages.setLines(4);
+                        //      articleWOImages.setEllipsize(TextUtils.TruncateAt.END);
+                        articleWOImages.setText(Html.fromHtml(eventEntry.getArticle()));
+                    } else {
+                        if (eventEntry.getSize() > 0)
+                            articleWOImages.setText("...");
+                        else
+                            articleWOImages.setText("");
+                    }
+                } else
+                    articleWOImages.setVisibility(View.GONE);
             }
         }
 

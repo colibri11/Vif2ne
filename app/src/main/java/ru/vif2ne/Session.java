@@ -19,16 +19,19 @@
 package ru.vif2ne;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
-import ru.vif2ne.R;
+
 import ru.vif2ne.backend.RemoteService;
 import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.DBHelper;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadEventTask;
+import ru.vif2ne.backend.tasks.LoginTask;
 import ru.vif2ne.backend.tasks.TasksContainer;
 import ru.vif2ne.ui.MainActivity;
 
@@ -85,6 +88,27 @@ public class Session {
         }.execute((Void) null);
     }
 
+    public void loadPrefs(boolean relogin) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        String username = prefs.getString("pref_username", "");
+        String passw = prefs.getString("pref_password", "");
+        setDetailView(prefs.getBoolean("pref_detail", false));
+        Log.d(LOG_TAG, "detail:" + isDetailView());
+        intentNeedRefresh("end: loadPrefs");
+        if (relogin)
+            new LoginTask(this, username, passw) {
+                @Override
+                public void goSuccess(Object result) {
+                    Toast.makeText(application, "login ok", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void goError() {
+                    Toast.makeText(application, "login error", Toast.LENGTH_SHORT).show();
+                }
+            }.execute((Void) null);
+
+    }
 
     public DBHelper getDbHelper() {
         if (dbHelper == null) dbHelper = new DBHelper(application.getApplicationContext());

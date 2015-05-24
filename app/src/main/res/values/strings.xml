@@ -71,4 +71,5 @@
     <string name="title_about_preference">О программе</string>
     <string name="summary_abount_preference">О программе</string>
     <string name="title_about_activity">О программе</string>
+    <string name="not_login">Вы не авторизованы</string>
 </resources>

@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,8 +38,8 @@ import ru.vif2ne.ui.MainActivity;
 
 public class Session {
 
-    public static final String INTENT_TASK = "ru.mazelab.vif2ne.INTENT_TASK";
-    public static final String INTENT_NEED_REFRESH = "ru.mazelab.vif2ne.INTENT_NEED_REFRESH";
+    public static final String INTENT_TASK = "ru.vif2ne.INTENT_TASK";
+    public static final String INTENT_NEED_REFRESH = "ru.vif2ne.INTENT_NEED_REFRESH";
     public static final int TREE_MODE = 0;
     public static final int FLAT_MODE = 1;
     public static final int SEARCH_MODE = 2;
@@ -95,7 +96,7 @@ public class Session {
         setDetailView(prefs.getBoolean("pref_detail", false));
         Log.d(LOG_TAG, "detail:" + isDetailView());
         intentNeedRefresh("end: loadPrefs");
-        if (relogin)
+        if (relogin && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(passw))
             new LoginTask(this, username, passw) {
                 @Override
                 public void goSuccess(Object result) {

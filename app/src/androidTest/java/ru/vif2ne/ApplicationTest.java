@@ -16,7 +16,7 @@
  * Created by serg 21.05.15 20:19
  */
 
-package ru.mazelab.vif2ne;
+package ru.vif2ne;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

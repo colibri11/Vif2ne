@@ -399,7 +399,6 @@ public class MainActivity extends BaseActivity {
             @Override
             protected void onProgressUpdate(Object... values) {
                 progressBar.setProgress((Integer) values[0]);
-                //      progressBar.refreshDrawableState();
                 super.onProgressUpdate(values);
             }
 

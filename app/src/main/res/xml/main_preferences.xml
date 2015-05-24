@@ -41,12 +41,4 @@
             android:title="@string/title_detail_preference" />
 
     </PreferenceCategory>
-    <PreferenceScreen
-        android:summary="@string/summary_abount_preference"
-        android:title="@string/title_about_preference">
-
-        <intent
-            android:targetClass="ru.vif2ne.ui.AbountActivity"
-            android:targetPackage="ru.vif2ne.ui" />
-    </PreferenceScreen>
 </PreferenceScreen>

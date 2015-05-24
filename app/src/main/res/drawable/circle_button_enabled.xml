@@ -21,8 +21,10 @@
     android:shape="oval">
     <solid android:color="@color/state_background" />
     <size
-        android:width="40dp"
-        android:height="40dp" />
+        android:width="20dp"
+        android:height="20dp" />
+
+
     <!--
         <stroke android:width="2dp" android:color="@color/primary_dark" />
     -->

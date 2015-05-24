@@ -59,4 +59,16 @@
     <string name="clear_action">Чистить</string>
     <string name="refreshing_tree">Обновляется дерево</string>
     <string name="bytes">( %d байт )</string>
+    <string name="error_get_xml_tree">Ошибка загрузки дерева %d</string>
+    <string name="title_preferences_activity">Настройки</string>
+    <string name="menu_preferences">Настройки</string>
+    <string name="preference_username_passwd_summary">Авторизация</string>
+    <string name="preference_username_summary">Введите имя пользователя</string>
+    <string name="preference_passwd_summary">Введите пароль</string>
+    <string name="preference_title_settings_application">Настройки просмотра</string>
+    <string name="title_detail_preference">Сообщения в дереве</string>
+    <string name="summary_detail_preference">Показ сообщений в дереве</string>
+    <string name="title_about_preference">О программе</string>
+    <string name="summary_abount_preference">О программе</string>
+    <string name="title_about_activity">О программе</string>
 </resources>

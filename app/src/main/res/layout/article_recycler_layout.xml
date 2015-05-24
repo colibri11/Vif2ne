@@ -39,7 +39,7 @@
 
             <TextView
                 android:id="@+id/level_view"
-                class="ru.mazelab.vif2ne.ui.widget.TextAwesome"
+                class="ru.vif2ne.ui.widget.TextAwesome"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:textSize="8dp" />
@@ -65,7 +65,7 @@
                     <view
                         android:id="@+id/entry_favorites"
                         style="@style/Button.Floating.Mini"
-                        class="ru.mazelab.vif2ne.ui.widget.TextAwesome"
+                        class="ru.vif2ne.ui.widget.TextAwesome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
@@ -125,11 +125,12 @@
                             android:textSize="@dimen/text_small_size" />
 
                         <view
-                            class="ru.mazelab.vif2ne.ui.widget.TextAwesome"
+                            class="ru.vif2ne.ui.widget.TextAwesome"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/fa_mail_reply"
-                            android:textSize="@dimen/text_small_size" />
+                            android:textSize="@dimen/text_small_size"
+                            android:id="@+id/replay_sign" />
 
                     </LinearLayout>
 
@@ -144,7 +145,7 @@
 
                 <TextView
                     android:id="@+id/article_wo_images"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:includeFontPadding="true"
@@ -153,9 +154,10 @@
 
                 <WebView
                     android:id="@+id/entry_web_view"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/transparent" />
+
             </LinearLayout>
         </LinearLayout>
 

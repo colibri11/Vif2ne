@@ -24,8 +24,8 @@
         android:color="@color/vif_dark" />
     <solid android:color="@color/button_enabled" />
     <size
-        android:width="40dp"
-        android:height="40dp" />
+        android:width="20dp"
+        android:height="20dp" />
     <!--
         <stroke android:width="2dp" android:color="@color/primary_light" />
     -->

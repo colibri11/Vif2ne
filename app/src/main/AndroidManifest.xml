@@ -17,19 +17,19 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.mazelab.vif2ne">
+    package="ru.vif2ne">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
 
     <application
-        android:name=".MainApplication"
+        android:name="ru.vif2ne.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="ru.vif2ne.ui.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,21 +38,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.LoginDialog"
+            android:name="ru.vif2ne.ui.LoginDialog"
             android:label="@string/title_login"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Vif.Light.Dialog">
 
         </activity>
         <activity
-            android:name=".ui.NewArticleActivity"
+            android:name="ru.vif2ne.ui.NewArticleActivity"
             android:label="@string/title_new_article"
             android:screenOrientation="portrait">
 
         </activity>
         <activity
-            android:name=".ui.WebActivity"
+            android:name="ru.vif2ne.ui.MainPreferences"
+            android:label="@string/title_preferences_activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="ru.vif2ne.ui.WebActivity"
             android:label="@string/title_preview_article"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".ui.AboutActivity"
+            android:label="@string/title_about_activity"
             android:screenOrientation="portrait">
 
         </activity>

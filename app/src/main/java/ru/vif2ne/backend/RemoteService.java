@@ -46,47 +46,6 @@ import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.throwable.ApplicationException;
 
-/**
- * Сервер хранит массив последних событий в дереве, до 4К элементов, при переполнении старшая половина массива чистится.
- * Запрос выдается в форме /nvk/forum/0/tree?xml=lastEvent
- * где lastEvent - id события, с которого осуществляется выдача (не включительно). Если lastEvent==-1 то выдается массив целиком.
- * Если события с таким id не найдено, отдается 201 Protocol mismatch с пустым телом ответа.
- * В противном случае ответ включает в себя секцию [lastEvent] где прописан id последнего события и ряд событий.
- * Формат события
- * 1) Добавление статьи в ветку
- * [event no="%X" type="add" parent="%X"]
- * no - id статьи в шестнадцатеричном виде
- * parent - id родителя статьи в шестнадцатеричном виде
- * Далее элементы [title], [author], [date], [size] (в байтах) и [crc] (CRC статьи, adler32 от мета-данных статьи)
- * 2) Удаление статьи
- * [event no="%X" type="del" parent="%X"/]
- * 3) Смена родителя
- * [event no="%X" type="parent" parent="%X"/]
- * 4) Фиксация ветки в дереве
- * [event no="%X" type="fix" mode="%u" /]
- * Возможные значения mode
- * 0 - закрепление ветки убрано
- * 1 - закрепление ветки с прибитем кверху
- * 256 - закрепление ветки без прибития кверху
- * <p/>
- * Прочее.
- * <p/>
- * Запрос ответов на статью в xml форме, формат тот же, что и выше, будут только события типа "add", пример
- * http://vif2ne.ru/nvk/forum/0/co/2692768.htm?xml
- * <p/>
- * Выдача текста статьи без layout, пример
- * http://vif2ne.ru/nvk/forum/0/co/2692768.htm?plain
- * <p/>
- * Получить список пользователей, имя которых начинается с подстройки name (не менее 3 символов), нужна авторизация, пример
- * http://vif2ne.ru/nvk/forum/0/security/peoplelist?xml=1&name=Nov
- * <p/>
- * P.S. Ввиду того, что обработку html entities я в свое время реализовал криво, квадратные скобки в тексте выше нужно заменить на угловые.
- * <p/>
- * <p/>
- * <p/>
- * http://vif2ne.ru/nvk/forum/0/co/2692781.htm
- */
-
 public class RemoteService {
 
     public static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";

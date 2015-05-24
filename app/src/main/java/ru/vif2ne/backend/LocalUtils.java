@@ -38,7 +38,6 @@ public class LocalUtils {
         SimpleDateFormat f = new SimpleDateFormat(format);
         return f.parse(isoDateString);
     }
-
 }
 
 

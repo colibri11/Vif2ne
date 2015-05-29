@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,7 +31,6 @@ import ru.vif2ne.backend.domains.DBHelper;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadEventTask;
-import ru.vif2ne.backend.tasks.LoginTask;
 import ru.vif2ne.backend.tasks.TasksContainer;
 import ru.vif2ne.ui.MainActivity;
 
@@ -60,6 +58,7 @@ public class Session {
     private String webContent;
     private Article article;
     private boolean detailView;
+    private Boolean credentialStatus;
 
     public Session(MainApplication application) {
         this.application = application;
@@ -89,26 +88,31 @@ public class Session {
         }.execute((Void) null);
     }
 
-    public void loadPrefs(boolean relogin) {
+    public void loadPrefs() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
         String username = prefs.getString("pref_username", "");
         String passw = prefs.getString("pref_password", "");
         setDetailView(prefs.getBoolean("pref_detail", false));
         Log.d(LOG_TAG, "detail:" + isDetailView());
         intentNeedRefresh("end: loadPrefs");
-        if (relogin && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(passw))
+        remoteService.setUserName(username);
+        remoteService.setPasswd(passw);
+ /*       if (credentialStatus == null  && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(passw))
             new LoginTask(this, username, passw) {
                 @Override
                 public void goSuccess(Object result) {
+                    credentialStatus = true;
                     Toast.makeText(application, "login ok", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void goError() {
+                    credentialStatus = false;
+                    remoteService.setUserName(null);
                     Toast.makeText(application, "login error", Toast.LENGTH_SHORT).show();
                 }
             }.execute((Void) null);
-
+*/
     }
 
     public DBHelper getDbHelper() {
@@ -191,5 +195,13 @@ public class Session {
 
     public void setDetailView(boolean detailView) {
         this.detailView = detailView;
+    }
+
+    public Boolean getCredentialStatus() {
+        return credentialStatus;
+    }
+
+    public void setCredentialStatus(Boolean credentialStatus) {
+        this.credentialStatus = credentialStatus;
     }
 }

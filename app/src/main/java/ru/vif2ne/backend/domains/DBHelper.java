@@ -25,7 +25,7 @@ import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 5;
     private static final String DB_NAME = "vif2";
     private static final String LOG_TAG = "DBHelper";
 
@@ -51,18 +51,16 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE events (id INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , " +
                 "last INTEGER NOT NULL , " +
                 "cnt INTEGER NOT NULL , " +
-                "time INTEGER NOT NULL )");
+                "time INTEGER NOT NULL," +
+                "username VARCHAR )");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(LOG_TAG, " --- Upgrade database from " + oldVersion
                 + " to " + newVersion + " version --- ");
-        if (newVersion == 3) {
-            db.execSQL("delete from events;");
-            db.execSQL("delete from event;");
-
-        }
+        if (oldVersion == 4 && newVersion == 5)
+            db.execSQL("ALTER TABLE events ADD COLUMN username VARCHAR");
 
 /*
         if (oldVersion == 2 && newVersion == 3) {

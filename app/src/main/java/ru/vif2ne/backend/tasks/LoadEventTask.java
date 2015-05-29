@@ -18,6 +18,7 @@
 
 package ru.vif2ne.backend.tasks;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -48,8 +49,19 @@ public abstract class LoadEventTask extends AbstractTask {
     @Override
     protected Object remoteCall() throws ApplicationException {
         try {
+            if (session.getEventEntries() == null &&
+                    !TextUtils.isEmpty(session.getRemoteService().getUserName()) &&
+                    !TextUtils.isEmpty(session.getRemoteService().getPasswd())) {
+                try {
+                    remoteService.login(session.getRemoteService().getUserName(),
+                            session.getRemoteService().getPasswd());
+                } catch (ApplicationException ae) {
+                    session.getRemoteService().setUserName(null);
+                }
+            }
+
             if (eventId == -1) {
-                eventId = session.getEventEntries().load();
+                eventId = session.getEventEntries().load(session.getRemoteService().getUserName());
                 Log.d(LOG_TAG, "last event:" + Long.toString(session.getEventEntries().getLastEvent()));
                 Log.d(LOG_TAG, "intent start");
                 session.intentNeedRefresh("end: session.getEventEntries().load()");

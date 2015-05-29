@@ -96,6 +96,7 @@ public class MainActivity extends BaseActivity {
 
         recyclerView.setAdapter(adapter);
 
+        session.loadPrefs();
 
         if (session.getEventEntries().getLastEvent() == -1) {
             session.loadTree(-1);
@@ -111,7 +112,7 @@ public class MainActivity extends BaseActivity {
         initBottomToolbar();
         progressBar = (ProgressBar) findViewById(R.id.progress);
 
-        session.loadPrefs(!session.getRemoteService().isAuthenticated());
+
         this.activity = this;
 
     }

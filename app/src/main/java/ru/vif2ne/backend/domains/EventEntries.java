@@ -59,6 +59,20 @@ public class EventEntries {
         refreshDate = new Date();
     }
 
+    public static int loadChildCountEventEntriesWithTree(EventEntry eventEntry) {
+        int cnt = 0;
+        if (cnt > 1000) return cnt;
+        for (EventEntry entry : eventEntry.getChildEventEntries()) {
+            try {
+                cnt++;
+                cnt = cnt + loadChildCountEventEntriesWithTree(entry);
+            } catch (Exception e) {
+                break;
+            }
+        }
+        return cnt;
+    }
+
     public void clearEntriesDB() {
         lastEvent = -1;
         eventEntries.clear();
@@ -80,22 +94,24 @@ public class EventEntries {
 
     private long cleardb() {
         SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
-        return db.delete("event", "favorite = 0", null);
+        return db.delete("events", null, null) + db.delete("event", "favorite = 0", null);
 
     }
 
-    public long load() {
+    public long load(String username) {
         Log.d(LOG_TAG, "sqlite start load:" + new Date().toString());
         int i = 0;
         try {
             SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
-            Cursor c = readableDatabase.query("events", null, "id = ?", new String[]{"1"}, null, null, null);
+            Cursor c = readableDatabase.query("events", null, "id = ? and username = ?", new String[]{"1", username}, null, null, null);
             lastEvent = -1;
             refreshDate = new Date();
             if (c != null) {
                 if (c.moveToFirst()) {
                     lastEvent = c.getLong(c.getColumnIndex("last"));
                     setRefreshDate(c.getLong(c.getColumnIndex("time")));
+                } else {
+                    clearEntriesDB();
                 }
                 c.close();
             }
@@ -232,10 +248,13 @@ public class EventEntries {
         }
     }
 
-
     public EventEntry get(int position) {
         return eventEntries.get(position);
     }
+
+    /*
+    * Loaders  begin
+    * */
 
     public EventEntry getByArtNo(long id) {
         for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
@@ -246,10 +265,6 @@ public class EventEntries {
         }
         return null;
     }
-
-    /*
-    * Loaders  begin
-    * */
 
     public void loadChildEventEntries(ArrayList<EventEntry> events, EventEntry eventEntry) {
         for (Iterator<EventEntry> it = eventEntry.getChildEventEntries().iterator(); it.hasNext(); ) {
@@ -275,20 +290,6 @@ public class EventEntries {
 
             }
         }
-    }
-
-    public static int loadChildCountEventEntriesWithTree(EventEntry eventEntry) {
-        int cnt = 0;
-        if (cnt > 1000) return cnt;
-        for (EventEntry entry : eventEntry.getChildEventEntries()) {
-            try {
-                cnt++;
-                cnt = cnt + loadChildCountEventEntriesWithTree(entry);
-            } catch (Exception e) {
-                break;
-            }
-        }
-        return cnt;
     }
 
     public void loadMatchEventEntries(String matchString, ArrayList<EventEntry> events) {
@@ -321,15 +322,13 @@ public class EventEntries {
         return lastEvent;
     }
 
-
-    public void setLastEvent(long lastEvent) {
-        this.lastEvent = lastEvent;
-    }
-
     public void setLastEvent(String lastEvent) {
         this.lastEvent = Long.parseLong(lastEvent);
     }
 
+    public void setLastEvent(long lastEvent) {
+        this.lastEvent = lastEvent;
+    }
 
     @Override
     public String toString() {

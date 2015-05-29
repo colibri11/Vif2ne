@@ -18,10 +18,20 @@
 
 package ru.vif2ne.ui;
 
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import ru.vif2ne.R;
 
 /**
  * Created by serg on 24.05.15.
  */
 public class AboutActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_about);
+
+    }
 }

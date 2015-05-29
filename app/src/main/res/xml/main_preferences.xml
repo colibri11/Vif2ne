@@ -18,27 +18,30 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:icon="@drawable/ic_person"
+    <PreferenceScreen
+        android:icon="@drawable/ic_action_social_person"
         android:summary="@string/preference_username_passwd_summary"
         android:title="Login information">
-        <EditTextPreference
-            android:key="pref_username"
-            android:summary="@string/preference_username_summary"
-            android:title="Username" />
-        <EditTextPreference
-            android:key="pref_password"
-            android:password="true"
-            android:summary="@string/preference_passwd_summary"
-            android:title="Password" />
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:icon="@drawable/ic_settings_applications_black"
+        <intent
+            android:targetClass="ru.vif2ne.ui.LoginDialog"
+            android:targetPackage="ru.vif2ne"></intent>
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:icon="@drawable/ic_action_action_settings"
         android:title="@string/preference_title_settings_application">
         <CheckBoxPreference
             android:key="pref_detail"
             android:summary="@string/summary_detail_preference"
             android:title="@string/title_detail_preference" />
 
-    </PreferenceCategory>
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:icon="@drawable/ic_action_action_info_outline"
+        android:key="about"
+        android:title="@string/title_about_activity">
+        <intent
+            android:targetClass="ru.vif2ne.ui.AboutActivity"
+            android:targetPackage="ru.vif2ne"></intent>
+    </PreferenceScreen>
+
 </PreferenceScreen>

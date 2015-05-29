@@ -40,7 +40,7 @@ public class MainPreferences extends PreferenceActivity {
 
     @Override
     protected void onDestroy() {
-        session.loadPrefs(true);
+        session.loadPrefs();
         super.onDestroy();
     }
 }

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
+import ru.vif2ne.backend.LocalUtils;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
 import ru.vif2ne.ui.adapter.EntryRecyclerAdapter;
@@ -96,7 +97,7 @@ public class MainActivity extends BaseActivity {
 
         recyclerView.setAdapter(adapter);
 
-        session.loadPrefs();
+
 
         if (session.getEventEntries().getLastEvent() == -1) {
             session.loadTree(-1);
@@ -111,9 +112,17 @@ public class MainActivity extends BaseActivity {
 */
         initBottomToolbar();
         progressBar = (ProgressBar) findViewById(R.id.progress);
-
+        try {
+            String enc = LocalUtils.enc("");
+            Log.d(LOG_TAG, "*****:" + LocalUtils.dec(enc) + " " + enc);
+            enc = LocalUtils.enc("34567asdfg");
+            Log.d(LOG_TAG, "*****:" + LocalUtils.dec(enc) + " " + enc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         this.activity = this;
+        session.loadPrefs();
 
     }
 

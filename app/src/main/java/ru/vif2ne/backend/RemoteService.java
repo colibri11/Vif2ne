@@ -53,6 +53,8 @@ public class RemoteService {
     public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
     public static final String URL_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
     public static final String URL_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
+
+    public static final String EMPTY_USER = "anonymouse";
     private static final String LOG_TAG = "RemoteService";
     private static final String URL_ACCESS = "http://vif2ne.ru/nvk/forum/security";
 
@@ -62,6 +64,7 @@ public class RemoteService {
     private final Session session;
     private String basicAuth;
 
+
     private ArrayList<String> setCookies;
     private String userName;
     private String passwd;
@@ -70,6 +73,8 @@ public class RemoteService {
     public RemoteService(Session session) {
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
+        setUserName(EMPTY_USER);
+        setPasswd("");
         this.session = session;
         setCookies = new ArrayList<>();
         basicAuth = "";
@@ -81,7 +86,7 @@ public class RemoteService {
 
     public void logout() {
         basicAuth = "";
-        setUserName("");
+        setUserName(EMPTY_USER);
         setPasswd("");
         setCookies.clear();
     }
@@ -166,7 +171,7 @@ public class RemoteService {
     public void login(String user, String passwd) throws IOException, ApplicationException {
         URL url = new URL(URL_ACCESS);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        setUserName("");
+        setUserName(EMPTY_USER);
         basicAuth = "Basic " + Base64.encodeToString((user + ":" + passwd).getBytes(), Base64.DEFAULT);
         connection.setRequestProperty("Authorization", basicAuth);
         connection.setUseCaches(false);
@@ -251,7 +256,11 @@ public class RemoteService {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        if (TextUtils.isEmpty(userName)) {
+            this.userName = EMPTY_USER;
+        } else {
+            this.userName = userName;
+        }
     }
 
     public String getPasswd() {

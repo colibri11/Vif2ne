@@ -20,10 +20,20 @@ package ru.vif2ne.backend;
 
 import android.content.Context;
 import android.text.format.DateUtils;
+import android.util.Base64;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class LocalUtils {
     public static String formatDateTime(Context ctx, Date date) {
@@ -38,6 +48,67 @@ public class LocalUtils {
         SimpleDateFormat f = new SimpleDateFormat(format);
         return f.parse(isoDateString);
     }
+
+    private static byte[] encrypt(byte[] raw, byte[] clear) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+        return cipher.doFinal(clear);
+    }
+
+    private static byte[] decrypt(byte[] raw, byte[] encrypted) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+        return cipher.doFinal(encrypted);
+    }
+
+    private static byte[] getKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String password = "passsword";
+        int iterationCount = 1000;
+        int saltLength = 32; // bytes; should be the same size as the output (256 / 8 = 32)
+        int keyLength = 256; // 256-bits for AES-256, 128-bits for AES-128, etc
+        byte[] salt; // Should be of saltLength
+
+    /* When first creating the key, obtain a salt with this: */
+        SecureRandom random = new SecureRandom();
+        salt = new byte[saltLength];
+        random.nextBytes(salt);
+
+        salt = "876yugytfvvb6ingi667rv7r76r5".getBytes();
+
+    /* Use this to derive the key from the password: */
+        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt,
+                iterationCount, keyLength);
+        SecretKeyFactory keyFactory = SecretKeyFactory
+                .getInstance("PBKDF2WithHmacSHA1");
+        return keyFactory.generateSecret(keySpec).getEncoded();
+    }
+
+    public static String enc(String value) {
+        try {
+            byte[] b = value.getBytes("UTF-8");
+            byte[] encryptedData = encrypt(getKey(), b);
+            return Base64.encodeToString(encryptedData, Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String dec(String value) {
+        try {
+            byte[] encryptedData = Base64.decode(value, Base64.DEFAULT);
+            byte[] decryptedData = decrypt(getKey(), encryptedData);
+            return new String(decryptedData, "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+    }
+
+
 }
 
 

@@ -90,13 +90,9 @@ public class Session {
 
     public void loadPrefs() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
-        String username = prefs.getString("pref_username", "");
-        String passw = prefs.getString("pref_password", "");
         setDetailView(prefs.getBoolean("pref_detail", false));
         Log.d(LOG_TAG, "detail:" + isDetailView());
         intentNeedRefresh("end: loadPrefs");
-        remoteService.setUserName(username);
-        remoteService.setPasswd(passw);
  /*       if (credentialStatus == null  && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(passw))
             new LoginTask(this, username, passw) {
                 @Override

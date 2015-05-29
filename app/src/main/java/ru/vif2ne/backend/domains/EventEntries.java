@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.Iterator;
 
 import ru.vif2ne.Session;
+import ru.vif2ne.backend.LocalUtils;
+import ru.vif2ne.backend.RemoteService;
 
 
 public class EventEntries {
@@ -83,7 +85,7 @@ public class EventEntries {
         else
             lastLoadedIds.clear();
         refreshDate = new Date();
-        cleardb();
+        clearDb();
     }
 
     public long packDb() {
@@ -92,10 +94,9 @@ public class EventEntries {
         return db.delete("event", "(id < ? and favorite = 0) or (deleted = 1) or (title=\"root\" and author = \"vif2\")", new String[]{lastEventDB});
     }
 
-    private long cleardb() {
+    private long clearDb() {
         SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
         return db.delete("events", null, null) + db.delete("event", "favorite = 0", null);
-
     }
 
     public long load(String username) {
@@ -103,6 +104,7 @@ public class EventEntries {
         int i = 0;
         try {
             SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
+            if (TextUtils.isEmpty(username)) username = "anonymouse";
             Cursor c = readableDatabase.query("events", null, "id = ? and username = ?", new String[]{"1", username}, null, null, null);
             lastEvent = -1;
             refreshDate = new Date();
@@ -145,6 +147,7 @@ public class EventEntries {
 
     public void save() {
         Log.d(LOG_TAG, "sqlite start save:" + new Date().toString());
+        RemoteService rs = session.getRemoteService();
         if (getLastLoadedIds() == null)
             return;
         int i = 0;
@@ -155,11 +158,15 @@ public class EventEntries {
             cv.put("last", lastEvent);
             cv.put("cnt", getLastLoadedIds().size());
             cv.put("time", refreshDate.getTime());
+            cv.put("username", rs.getUserName());
+            cv.put("code", LocalUtils.enc(rs.getPasswd()));
             db.insertWithOnConflict(EventEntries.TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
             cv.clear();
             cv.put("last", lastEvent);
             cv.put("cnt", getLastLoadedIds().size());
             cv.put("time", refreshDate.getTime());
+            cv.put("username", rs.getUserName());
+            cv.put("code", LocalUtils.enc(rs.getPasswd()));
             db.insert(EventEntries.TABLE_NAME, null, cv);
             db.beginTransaction();
             try {
@@ -322,12 +329,12 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void setLastEvent(String lastEvent) {
-        this.lastEvent = Long.parseLong(lastEvent);
-    }
-
     public void setLastEvent(long lastEvent) {
         this.lastEvent = lastEvent;
+    }
+
+    public void setLastEvent(String lastEvent) {
+        this.lastEvent = Long.parseLong(lastEvent);
     }
 
     @Override

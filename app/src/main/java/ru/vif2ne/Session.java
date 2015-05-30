@@ -93,22 +93,6 @@ public class Session {
         setDetailView(prefs.getBoolean("pref_detail", false));
         Log.d(LOG_TAG, "detail:" + isDetailView());
         intentNeedRefresh("end: loadPrefs");
- /*       if (credentialStatus == null  && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(passw))
-            new LoginTask(this, username, passw) {
-                @Override
-                public void goSuccess(Object result) {
-                    credentialStatus = true;
-                    Toast.makeText(application, "login ok", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void goError() {
-                    credentialStatus = false;
-                    remoteService.setUserName(null);
-                    Toast.makeText(application, "login error", Toast.LENGTH_SHORT).show();
-                }
-            }.execute((Void) null);
-*/
     }
 
     public DBHelper getDbHelper() {

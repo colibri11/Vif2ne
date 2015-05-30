@@ -77,8 +77,11 @@ public class EventEntries {
 
     public void clearEntriesDB() {
         lastEvent = -1;
+        if (eventEntries.size() > 0) {
+            rootEntry = eventEntries.get(0);
+        } else
+            rootEntry = new EventEntry();
         eventEntries.clear();
-        rootEntry = new EventEntry();
         eventEntries.add(rootEntry);
         if (lastLoadedIds == null)
             lastLoadedIds = new ArrayList<>();
@@ -226,7 +229,7 @@ public class EventEntries {
     }
 
     public void makeTree(ArrayList<Long> idParse) {
-        Log.d(LOG_TAG, "eventEntries size:" + eventEntries.size());
+        Log.d(LOG_TAG, "makeTree eventEntries size:" + eventEntries.size());
         for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
             EventEntry entry = it.next();
             if (entry.isDeleted()) {
@@ -242,6 +245,7 @@ public class EventEntries {
                 }
             }
         }
+        Log.d(LOG_TAG, "makeTree End");
         sortTree(eventEntries);
         setLastLoadedIds(idParse);
         save();
@@ -329,12 +333,12 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void setLastEvent(long lastEvent) {
-        this.lastEvent = lastEvent;
-    }
-
     public void setLastEvent(String lastEvent) {
         this.lastEvent = Long.parseLong(lastEvent);
+    }
+
+    public void setLastEvent(long lastEvent) {
+        this.lastEvent = lastEvent;
     }
 
     @Override

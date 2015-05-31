@@ -41,6 +41,7 @@
                 class="ru.vif2ne.ui.widget.TextAwesome"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:maxWidth="120dp"
                 android:textSize="8dp" />
         </LinearLayout>
 

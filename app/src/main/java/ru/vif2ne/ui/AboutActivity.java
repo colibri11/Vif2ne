@@ -13,25 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by serg 24.05.15 21:19
+ * Created by serg 31.05.15 16:09
  */
 
 package ru.vif2ne.ui;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 
 import ru.vif2ne.R;
 
-/**
- * Created by serg on 24.05.15.
- */
 public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        TextView versionTextView = (TextView) findViewById(R.id.version_view);
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pInfo.versionName;
+            versionTextView.setText("version:" + version);
+        } catch (PackageManager.NameNotFoundException e) {
+            versionTextView.setVisibility(View.GONE);
+            e.printStackTrace();
+        }
+
+
 
     }
 }

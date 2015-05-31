@@ -72,7 +72,7 @@
     <string name="summary_abount_preference">О программе</string>
     <string name="title_about_activity">О программе</string>
     <string name="not_login">Вы не авторизованы</string>
-    <string name="about"><![CDATA[Клиент для форума сайта vif2ne]]></string>
+    <string name="about"><![CDATA[Клиент для форума сайта\n vif2ne.ru]]></string>
     <string name="subject">Тема</string>
     <string name="article_body">Сообщение</string>
     <string name="summary_find_users_preference">Искать авторов, а не темы</string>

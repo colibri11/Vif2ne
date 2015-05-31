@@ -63,6 +63,7 @@ public abstract class LoadEventTask extends AbstractTask {
             }
 
             if (eventId == -1) {
+                session.getEventEntries().clearEntries();
                 eventId = session.getEventEntries().load(session.getRemoteService().getUserName());
                 Log.d(LOG_TAG, "last event:" + Long.toString(session.getEventEntries().getLastEvent()));
                 session.intentNeedRefresh("end: session.getEventEntries().load()");

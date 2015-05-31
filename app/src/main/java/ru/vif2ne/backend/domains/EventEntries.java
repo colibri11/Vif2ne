@@ -93,34 +93,37 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void clearEntriesDB() {
-        lastEvent = -1;
-/*        if (eventEntries.size() > 0) {
-            rootEntry = eventEntries.get(0);
-        } else
-            rootEntry = new EventEntry();
-            */
+
+    public void clearEntries() {
         if (rootEntry == null)
             rootEntry = new EventEntry();
+        rootEntry.getChildEventEntries().clear();
         eventEntries.clear();
         eventEntries.add(rootEntry);
         if (lastLoadedIds == null)
             lastLoadedIds = new ArrayList<>();
         else
             lastLoadedIds.clear();
+    }
+
+
+    public void clearEntriesDB() {
+        lastEvent = -1;
         refreshDate = new Date();
+        clearEntries();
         clearDb();
     }
 
     public long packDb() {
         SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
         String lastEventDB = Long.toString(lastEvent - MAX_DB_RECORDS);
-        return db.delete("event", "(id < ? and favorite = 0) or (deleted = 1) or (title=\"root\" and author = \"vif2\")", new String[]{lastEventDB});
+        return db.delete(EventEntry.TABLE_NAME, "(id < ? and favorite = 0) or (deleted = 1) or (title=\"root\" and author = \"vif2\")", new String[]{lastEventDB});
     }
 
-    private long clearDb() {
+    private void clearDb() {
         SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
-        return db.delete("events", null, null) + db.delete("event", "favorite = 0", null);
+        db.delete(TABLE_NAME, null, null);
+        db.delete(EventEntry.TABLE_NAME, null, null);
     }
 
     public long load(String username) {
@@ -129,20 +132,18 @@ public class EventEntries {
         try {
             SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
             if (TextUtils.isEmpty(username)) username = RemoteService.EMPTY_USER;
-            Cursor c = readableDatabase.query("events", null, "id = ? and username = ?", new String[]{"1", username}, null, null, null);
+            Cursor c = readableDatabase.query(TABLE_NAME, null, "id = ? and username = ?", new String[]{"1", username}, null, null, null);
             lastEvent = -1;
             refreshDate = new Date();
             if (c != null) {
                 if (c.moveToFirst()) {
                     lastEvent = c.getLong(c.getColumnIndex("last"));
                     setRefreshDate(c.getLong(c.getColumnIndex("time")));
-                } else {
-                    clearEntriesDB();
                 }
                 c.close();
             }
             if (lastEvent == -1) {
-                reSetEventEntries();
+                clearEntriesDB();
                 return -1;
             }
             c = readableDatabase.query("event", null, "deleted = 0", null, null, null, null);
@@ -161,13 +162,7 @@ public class EventEntries {
         }
     }
 
-    public void reSetEventEntries() {
-        eventEntries.clear();
-        eventEntries.add(rootEntry);
-        SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
-        db.delete(EventEntry.TABLE_NAME, null, null);
-        save();
-    }
+
 
     public void save() {
         Log.d(LOG_TAG, "sqlite start save:" + new Date().toString());
@@ -269,7 +264,8 @@ public class EventEntries {
         Log.d(LOG_TAG, "makeTree End");
         sortTree(eventEntries);
         setLastLoadedIds(idParse);
-        save();
+        if (idParse != null)
+            save();
     }
 
     public void sortTree(ArrayList<EventEntry> entries) {
@@ -354,12 +350,12 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void setLastEvent(long lastEvent) {
-        this.lastEvent = lastEvent;
-    }
-
     public void setLastEvent(String lastEvent) {
         this.lastEvent = Long.parseLong(lastEvent);
+    }
+
+    public void setLastEvent(long lastEvent) {
+        this.lastEvent = lastEvent;
     }
 
     @Override

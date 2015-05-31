@@ -62,7 +62,7 @@ public class Vif2NeXmlParser {
                             XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
 
         if (lastEventId == -1) {
-            entries.reSetEventEntries();
+            entries.clearEntries();
         }
 
         this.idParse = new ArrayList<>();

@@ -21,6 +21,7 @@ package ru.vif2ne.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,7 @@ import ru.vif2ne.backend.tasks.LoginTask;
 
 public class LoginDialog extends BaseActivity {
 
+    private static final String LOG_TAG = "LoginDialog";
     private EditText usernameEditView, passView;
     private Button loginAction, cancelAction, logoutAction, cancelLogoutAction;
     private ImageView loginStatusImage;
@@ -75,7 +77,10 @@ public class LoginDialog extends BaseActivity {
             @Override
             public void onClick(View v) {
                 remoteService.logout();
+                session.getEventEntries().clearEntriesDB();
+                Log.d(LOG_TAG, "size bl:" + session.getEventEntries().size());
                 session.loadTree(-1);
+                Log.d(LOG_TAG, "size al:" + session.getEventEntries().size());
                 finish();
             }
         });

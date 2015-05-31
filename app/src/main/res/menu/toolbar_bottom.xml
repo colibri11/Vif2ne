@@ -41,10 +41,11 @@
         android:icon="@drawable/ic_action_sync"
         android:orderInCategory="110"
         android:title="@string/menu_refresh"
+        android:visible="false"
         app:showAsAction="always" />
     <item
         android:id="@+id/bottom_menu_favorites"
-        android:icon="@drawable/ic_action_grade"
+        android:icon="@drawable/ic_action_toggle_star"
         android:orderInCategory="130"
         android:title="@string/menu_favorites"
         app:showAsAction="always" />

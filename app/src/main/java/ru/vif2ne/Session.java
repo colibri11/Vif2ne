@@ -74,6 +74,17 @@ public class Session {
         Log.d(LOG_TAG, eventEntry.toString());
         new LoadEventTask(this, eventId) {
             @Override
+            protected void postExecuteBackground() {
+                super.postExecuteBackground();
+                if (getCurrentActivity() != null) {
+                    if (getCurrentActivity().swipeRefresh.isRefreshing()) {
+                        getCurrentActivity().swipeRefresh.setRefreshing(false);
+                        getCurrentActivity().swipeRefresh.setEnabled(true);
+                    }
+                }
+            }
+
+            @Override
             public void goSuccess(Object result) {
                 if (getCurrentActivity() != null && (Boolean) result) {
                     Toast.makeText(currentActivity,
@@ -84,6 +95,7 @@ public class Session {
                 }
                 intentNeedRefresh(String.format("end: session.loadTree (%d) success",
                         eventEntries.getLastLoadedIds().size()));
+                Log.d(LOG_TAG, "entries size:" + eventEntries.size());
             }
         }.execute((Void) null);
     }

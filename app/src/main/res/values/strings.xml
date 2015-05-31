@@ -73,4 +73,6 @@
     <string name="title_about_activity">О программе</string>
     <string name="not_login">Вы не авторизованы</string>
     <string name="about"><![CDATA[Клиент для форума сайта vif2ne]]></string>
+    <string name="subject">Тема</string>
+    <string name="article_body">Сообщение</string>
 </resources>

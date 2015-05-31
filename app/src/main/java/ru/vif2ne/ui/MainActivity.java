@@ -20,6 +20,7 @@ package ru.vif2ne.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,10 +49,9 @@ public class MainActivity extends BaseActivity {
 
 
     private static final String LOG_TAG = "MainActivity";
-
+    public SwipeRefreshLayout swipeRefresh;
     protected EntryRecyclerAdapter adapter;
     protected RecyclerView recyclerView;
-
     protected ArrayList<EventEntry> navigatorEventEntries;
     protected MenuItem searchMenuItem;
     protected SearchView mSearchView;
@@ -91,6 +91,18 @@ public class MainActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         adapter = new EntryRecyclerAdapter(session, this.navigatorEventEntries, layoutManager);
 
+        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefresh.setEnabled(false);
+                if (session.getTasksContainer().size() == 0) {
+                    session.loadTree(session.getEventEntries().getLastEvent());
+                    showNonBlockingProgress();
+                }
+            }
+        });
+
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
         recyclerView.setLayoutManager(layoutManager);
@@ -128,7 +140,6 @@ public class MainActivity extends BaseActivity {
 
 
     }
-
 
 
     @Override
@@ -237,10 +248,10 @@ public class MainActivity extends BaseActivity {
                 }
             }
             if (menuItem.getTitle().equals(getResources().getString(R.string.menu_favorites))) {
-                if (getMode() != Session.FAVORITES_MODE) {
-                    menuItem.setIcon(R.drawable.ic_action_grade);
+                if (getMode() == Session.FAVORITES_MODE) {
+                    menuItem.setIcon(R.drawable.ic_action_toggle_star_outline);
                 } else {
-                    menuItem.setIcon(R.drawable.ic_action_subject);
+                    menuItem.setIcon(R.drawable.ic_action_toggle_star);
                 }
             }
 
@@ -275,7 +286,6 @@ public class MainActivity extends BaseActivity {
                             showNonBlockingProgress();
                         }
                         break;
-
                     case R.id.bottom_menu_auth:
                         session.navigate(null);
                         intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
@@ -385,6 +395,7 @@ public class MainActivity extends BaseActivity {
         if (getMode() != Session.FAVORITES_MODE) {
             setMode(Session.FAVORITES_MODE);
             session.getEventEntries().loadFavoritesEventEntries(navigatorEventEntries);
+            refreshBottomMenu();
             adapter.notifyDataSetChanged();
         } else {
             resetMode();

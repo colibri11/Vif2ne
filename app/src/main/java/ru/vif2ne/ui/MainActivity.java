@@ -39,7 +39,6 @@ import java.util.ArrayList;
 
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
-import ru.vif2ne.backend.LocalUtils;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
@@ -96,6 +95,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onRefresh() {
                 swipeRefresh.setEnabled(false);
+                if (mode == Session.SEARCH_MODE)
+                    searchMenuItem.collapseActionView();
                 if (session.getTasksContainer().size() == 0) {
                     session.loadTree(session.getEventEntries().getLastEvent());
                     showNonBlockingProgress();
@@ -120,22 +121,8 @@ public class MainActivity extends BaseActivity {
 
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         setSupportActionBar(toolbarTop);
-/*
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
-*/
         initBottomToolbar();
         progressBar = (ProgressBar) findViewById(R.id.progress);
-        try {
-            String enc = LocalUtils.enc("");
-            Log.d(LOG_TAG, "*****:" + LocalUtils.dec(enc) + " " + enc);
-            enc = LocalUtils.enc("34567asdfg");
-            Log.d(LOG_TAG, "*****:" + LocalUtils.dec(enc) + " " + enc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         this.activity = this;
 
 
@@ -165,16 +152,13 @@ public class MainActivity extends BaseActivity {
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
         }
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(!session.getNavigator().getEventEntry().isRoot());
         showNonBlockingProgress();
         refreshBottomMenu();
     }
 
     public void showNonBlockingProgress() {
-
         if (progressBar != null) {
             if (session.getTasksContainer().size() > 0) {
-                Log.d(LOG_TAG, "show progress");
                 progressBar.setVisibility(View.VISIBLE);
             } else {
                 progressBar.setVisibility(View.GONE);
@@ -249,9 +233,9 @@ public class MainActivity extends BaseActivity {
             }
             if (menuItem.getTitle().equals(getResources().getString(R.string.menu_favorites))) {
                 if (getMode() == Session.FAVORITES_MODE) {
-                    menuItem.setIcon(R.drawable.ic_action_toggle_star_outline);
-                } else {
                     menuItem.setIcon(R.drawable.ic_action_toggle_star);
+                } else {
+                    menuItem.setIcon(R.drawable.ic_action_toggle_star_outline);
                 }
             }
 
@@ -353,7 +337,12 @@ public class MainActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() > 2) {
-                    session.getEventEntries().loadMatchEventEntries(newText, navigatorEventEntries);
+                    if (session.isFindUser()) {
+                        session.getEventEntries().loadMatchUserEventEntries(newText,
+                                navigatorEventEntries);
+                    } else
+                        session.getEventEntries().loadMatchEventEntries(newText,
+                                navigatorEventEntries);
                     adapter.notifyDataSetChanged();
                 } else if (getMode() != Session.SEARCH_MODE) {
                     navigatorEventEntries.clear();
@@ -374,12 +363,6 @@ public class MainActivity extends BaseActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
-/*            case R.id.top_menu_auth:
-                session.navigate(null);
-                intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
-                session.getCurrentActivity().startActivity(intent);
-                break;
- */
             case R.id.top_menu_preferences:
                 intent = new Intent(session.getCurrentActivity(), MainPreferences.class);
                 session.getCurrentActivity().startActivity(intent);

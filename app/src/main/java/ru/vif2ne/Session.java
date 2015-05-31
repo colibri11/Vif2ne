@@ -59,6 +59,7 @@ public class Session {
     private Article article;
     private boolean detailView;
     private Boolean credentialStatus;
+    private boolean findUser;
 
     public Session(MainApplication application) {
         this.application = application;
@@ -67,6 +68,7 @@ public class Session {
         this.eventEntries = new EventEntries(this);
         this.eventEntry = eventEntries.get(0);
         this.dbHelper = null;
+        this.findUser = false;
     }
 
     public void loadTree(long eventId) {
@@ -103,6 +105,7 @@ public class Session {
     public void loadPrefs() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
         setDetailView(prefs.getBoolean("pref_detail", false));
+        setFindUser(prefs.getBoolean("pref_find_users", false));
         Log.d(LOG_TAG, "detail:" + isDetailView());
         intentNeedRefresh("end: loadPrefs");
     }
@@ -195,5 +198,13 @@ public class Session {
 
     public void setCredentialStatus(Boolean credentialStatus) {
         this.credentialStatus = credentialStatus;
+    }
+
+    public boolean isFindUser() {
+        return findUser;
+    }
+
+    public void setFindUser(boolean findUser) {
+        this.findUser = findUser;
     }
 }

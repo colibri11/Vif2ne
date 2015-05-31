@@ -26,7 +26,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import ru.vif2ne.Session;
@@ -61,20 +63,6 @@ public class EventEntries {
         refreshDate = new Date();
     }
 
-    public static int loadChildCountEventEntriesWithTree(EventEntry eventEntry) {
-        int cnt = 0;
-        if (cnt > 1000) return cnt;
-        for (EventEntry entry : eventEntry.getChildEventEntries()) {
-            try {
-                cnt++;
-                cnt = cnt + loadChildCountEventEntriesWithTree(entry);
-            } catch (Exception e) {
-                break;
-            }
-        }
-        return cnt;
-    }
-
     public static long loadHeaderDb(Session session) {
         SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
         Cursor c = readableDatabase.query("events", null, "id = ?",
@@ -93,6 +81,35 @@ public class EventEntries {
         return lastEvent;
     }
 
+    public boolean isNew(EventEntry entry) {
+        if (lastLoadedIds == null)
+            return false;
+        for (Long id : lastLoadedIds) {
+            if (entry.getArtNo() == id) return true;
+        }
+        return false;
+    }
+
+    public HashMap<String, Integer> loadChildCountEventEntriesWithTree(EventEntry eventEntry) {
+        int cnt = 0;
+        int newEntry = 0;
+        HashMap<String, Integer> res = new HashMap<>();
+        for (EventEntry entry : eventEntry.getChildEventEntries()) {
+            try {
+                cnt++;
+                if (isNew(entry))
+                    newEntry++;
+                HashMap<String, Integer> localRes = loadChildCountEventEntriesWithTree(entry);
+                cnt = cnt + localRes.get("cnt");
+                newEntry = newEntry + localRes.get("new");
+            } catch (Exception e) {
+                break;
+            }
+        }
+        res.put("cnt", cnt);
+        res.put("new", newEntry);
+        return res;
+    }
 
     public void clearEntries() {
         if (rootEntry == null)
@@ -161,7 +178,6 @@ public class EventEntries {
             Log.d(LOG_TAG, "sqlite end load:" + new Date().toString() + " cnt:" + i + " size:" + eventEntries.size());
         }
     }
-
 
 
     public void save() {
@@ -262,17 +278,36 @@ public class EventEntries {
             }
         }
         Log.d(LOG_TAG, "makeTree End");
-        sortTree(eventEntries);
+        if (eventEntries.size() > 0)
+            sortTree(eventEntries.get(0));
         setLastLoadedIds(idParse);
         if (idParse != null)
             save();
     }
 
-    public void sortTree(ArrayList<EventEntry> entries) {
-        for (Iterator<EventEntry> it = entries.iterator(); it.hasNext(); ) {
-            EventEntry entry = it.next();
+    public void sortTree(EventEntry eventEntry) {
+
+        if (eventEntry.isRoot()) {
+            Collections.sort(eventEntry.getChildEventEntries());
+            Log.d(LOG_TAG, "fake root:" + eventEntry.getChildEventEntries().size());
+        } else {
+            Collections.sort(eventEntry.getChildEventEntries(), new Comparator<EventEntry>() {
+                @Override
+                public int compare(EventEntry lhs, EventEntry rhs) {
+                    return EventEntry.cmp(lhs.date, rhs.date);
+                }
+            });
+        }
+
+        for (EventEntry entry : eventEntry.getChildEventEntries()) {
+            sortTree(entry);
+        }
+    }
+
+    public void sortTreeOld(ArrayList<EventEntry> entries) {
+        for (EventEntry entry : entries) {
             Collections.sort(entry.getChildEventEntries());
-            sortTree(entry.getChildEventEntries());
+            sortTreeOld(entry.getChildEventEntries());
         }
     }
 
@@ -285,8 +320,7 @@ public class EventEntries {
     * */
 
     public EventEntry getByArtNo(long id) {
-        for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
-            EventEntry entry = it.next();
+        for (EventEntry entry : eventEntries) {
             if (entry.artNo == id) {
                 return entry;
             }
@@ -295,8 +329,7 @@ public class EventEntries {
     }
 
     public void loadChildEventEntries(ArrayList<EventEntry> events, EventEntry eventEntry) {
-        for (Iterator<EventEntry> it = eventEntry.getChildEventEntries().iterator(); it.hasNext(); ) {
-            EventEntry entry = it.next();
+        for (EventEntry entry : eventEntry.getChildEventEntries()) {
             events.add(entry);
         }
 //        Collections.sort(events);
@@ -324,12 +357,23 @@ public class EventEntries {
         events.clear();
         for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
             EventEntry entry = it.next();
-            if (entry.titleArticle != null && entry.titleArticle.toUpperCase().contains(matchString.toUpperCase()))
+            if (entry.titleArticle != null &&
+                    entry.titleArticle.toUpperCase().contains(matchString.toUpperCase()))
                 events.add(entry);
         }
         Collections.sort(events);
     }
 
+    public void loadMatchUserEventEntries(String matchString, ArrayList<EventEntry> events) {
+        events.clear();
+        for (Iterator<EventEntry> it = eventEntries.iterator(); it.hasNext(); ) {
+            EventEntry entry = it.next();
+            if (entry.getAuthor() != null &&
+                    entry.getAuthor().toUpperCase().contains(matchString.toUpperCase()))
+                events.add(entry);
+        }
+        Collections.sort(events);
+    }
 
     public void loadFavoritesEventEntries(ArrayList<EventEntry> events) {
         events.clear();
@@ -350,12 +394,12 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void setLastEvent(String lastEvent) {
-        this.lastEvent = Long.parseLong(lastEvent);
-    }
-
     public void setLastEvent(long lastEvent) {
         this.lastEvent = lastEvent;
+    }
+
+    public void setLastEvent(String lastEvent) {
+        this.lastEvent = Long.parseLong(lastEvent);
     }
 
     @Override

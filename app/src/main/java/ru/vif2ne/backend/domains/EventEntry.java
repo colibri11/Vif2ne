@@ -132,6 +132,11 @@ public class EventEntry implements Comparable<EventEntry> {
         return artParent == -1;
     }
 
+    public Boolean isFakeRoot() {
+        return artNo == -1;
+    }
+
+
     /**
      * ******************
      */

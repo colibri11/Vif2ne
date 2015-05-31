@@ -32,6 +32,8 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.ExtHtmlTagHandler;
@@ -49,6 +51,7 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
     protected View view, signView;
     protected WebView mainWebView;
     protected Session session;
+    protected EventEntries eventEntries;
     protected LinearLayoutManager layoutManager;
     protected LinearLayout entryLayout, subRootLayout, entryBodyLayout;
     protected String webContent = "<head>\n" +
@@ -63,10 +66,12 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
             "</body>\n";
 
 
-    public EntryRecyclerViewHolder(final Session session, View itemView, LinearLayoutManager linearLayoutManager) {
+    public EntryRecyclerViewHolder(Session sessionInput,
+                                   View itemView, LinearLayoutManager linearLayoutManager) {
         super(itemView);
         this.view = itemView;
-        this.session = session;
+        this.session = sessionInput;
+        this.eventEntries = session.getEventEntries();
         this.layoutManager = linearLayoutManager;
         entryLayout = (LinearLayout) itemView.findViewById(R.id.entry_layout);
         entryDate = (TextView) itemView.findViewById(R.id.entry_date);
@@ -215,19 +220,36 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
                     articleWOImages.setVisibility(View.GONE);
             }
         }
-
+        HashMap<String, Integer> chld = eventEntries.loadChildCountEventEntriesWithTree(eventEntry);
+        Integer newEvent = chld.get("new");
+        Integer cntEvent = chld.get("cnt");
         // entryChild.setText(Integer.toString(eventEntry.getChildEventEntries().size()));
         if (eventEntry.getParentEventEntry() != null && eventEntry.getParentEventEntry().isRoot()) {
-            entryChild.setText(Integer.toString(EventEntries.loadChildCountEventEntriesWithTree(eventEntry)));
+            entryChild.setText(cntEvent + ((newEvent == 0) ? "" : " нов:" + newEvent));
             entryChild.setVisibility(View.VISIBLE);
             signView.setVisibility(View.VISIBLE);
         } else {
             signView.setVisibility(View.GONE);
             entryChild.setVisibility(View.GONE);
         }
+        if (eventEntries.isNew(eventEntry)) {
+            entryTitle.setTextColor(view.getResources().getColor(R.color.newEntry));
+        } else
+            entryTitle.setTextColor(view.getResources().getColor(R.color.primary_text));
         entryDate.setText(LocalUtils.formatDateTime(view.getContext(), eventEntry.getDate()));
         entrySize.setText(String.format(view.getResources().getString(R.string.bytes), eventEntry.getSize()));
-        entryUserName.setText(eventEntry.getAuthor());
+        String author = String.format(view.getResources().getString(R.string.author_template), eventEntry.getAuthor());
+        String replay_template = view.getResources().getString(R.string.author_replay_template);
+        if (eventEntry.getParentEventEntry().isRoot())
+            entryUserName.setText(Html.fromHtml(author));
+        else
+            entryUserName.setText(Html.fromHtml(
+                            author + " " +
+                                    String.format(replay_template,
+                                            eventEntry.getParentEventEntry().getAuthor())
+                    )
+            );
+
         if (eventEntry.getTitleArticle() != null) {
 /*
             SpannableString str = new SpannableString(eventEntry.getTitleArticle());

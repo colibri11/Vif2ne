@@ -75,4 +75,9 @@
     <string name="about"><![CDATA[Клиент для форума сайта vif2ne]]></string>
     <string name="subject">Тема</string>
     <string name="article_body">Сообщение</string>
+    <string name="summary_find_users_preference">Искать авторов, а не темы</string>
+    <string name="title_find_users_preference">Искать авторов</string>
+    <string name="preference_title">Настройки</string>
+    <string name="author_template"><![CDATA[<b>%s</b>]]></string>
+    <string name="author_replay_template">к %s</string>
 </resources>

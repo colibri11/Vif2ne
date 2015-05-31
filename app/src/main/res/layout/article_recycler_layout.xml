@@ -18,10 +18,9 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="4dp"
     android:paddingLeft="4dp"
     android:paddingRight="8dp"
     android:paddingTop="4dp">
@@ -90,8 +89,7 @@
                         android:id="@+id/entry_user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Администрация (Дмитрий Козырев)"
-                        android:textStyle="bold" />
+                        android:text="Администрация (Дмитрий Козырев)" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -125,12 +123,12 @@
                             android:textSize="@dimen/text_small_size" />
 
                         <view
+                            android:id="@+id/replay_sign"
                             class="ru.vif2ne.ui.widget.TextAwesome"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/fa_mail_reply"
-                            android:textSize="@dimen/text_small_size"
-                            android:id="@+id/replay_sign" />
+                            android:textSize="@dimen/text_small_size" />
 
                     </LinearLayout>
 

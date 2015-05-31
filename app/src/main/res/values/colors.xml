@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2015 by Sergey Omarov
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +21,7 @@
             <color name="vif_light">#eee9cf</color>
             <color name="vif_dark">#eae3c0</color>
     -->
-        <color name="vif_alt">#a1ac9e</color>
+    <color name="vif_alt">#a1ac9e</color>
     <color name="vif_light">@color/tab_even</color>
     <color name="vif_dark">@color/vif_alt</color>
     <!--
@@ -39,6 +38,7 @@
     <color name="tab_even">#eae3c0</color>
 
     <color name="transparent">#00000000</color>
+    <color name="newEntry">@color/md_purple_500</color>
 
     <color name="colorPrimary">@color/vif_alt</color>
 

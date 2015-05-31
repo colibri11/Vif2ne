@@ -32,7 +32,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
             android:orientation="vertical">
 
             <ImageView
@@ -103,11 +102,11 @@
                 android:id="@+id/username_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
                 android:text="@string/test_short"
-                android:textSize="@dimen/text_large_x_size" />
+                android:textSize="@dimen/text_large_xx_size" />
 
             <LinearLayout
                 android:layout_width="match_parent"

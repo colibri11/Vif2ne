@@ -108,18 +108,25 @@ public class Vif2NeXmlParser {
                 continue;
             }
             String name = parser.getName();
-            if (name.equals("title")) {
-                eventEntry.setTitleArticle(readTag(parser, ns, "title"));
-            } else if (name.equals("author")) {
-                eventEntry.setAuthor(readTag(parser, ns, "author"));
-            } else if (name.equals("date")) {
-                eventEntry.setDate(readTag(parser, ns, "date"));
-            } else if (name.equals("size")) {
-                eventEntry.setSize(readTag(parser, ns, "size"));
-            } else if (name.equals("crc")) {
-                eventEntry.setCrc(readTag(parser, ns, "crc"));
-            } else {
-                skipTag(parser);
+            switch (name) {
+                case "title":
+                    eventEntry.setTitleArticle(readTag(parser, ns, "title"));
+                    break;
+                case "author":
+                    eventEntry.setAuthor(readTag(parser, ns, "author"));
+                    break;
+                case "date":
+                    eventEntry.setDate(readTag(parser, ns, "date"));
+                    break;
+                case "size":
+                    eventEntry.setSize(readTag(parser, ns, "size"));
+                    break;
+                case "crc":
+                    eventEntry.setCrc(readTag(parser, ns, "crc"));
+                    break;
+                default:
+                    skipTag(parser);
+                    break;
             }
         }
         return eventEntry;

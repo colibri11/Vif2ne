@@ -19,7 +19,6 @@
 package ru.vif2ne.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -31,11 +30,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.vif2ne.R;
+import ru.vif2ne.backend.RemoteService;
 import ru.vif2ne.backend.tasks.LoginTask;
 
 public class LoginDialog extends BaseActivity {
 
-    public static final String LOGIN_NAME = "login";
     private EditText usernameEditView, passView;
     private Button loginAction, cancelAction, logoutAction, cancelLogoutAction;
     private ImageView loginStatusImage;
@@ -76,6 +75,7 @@ public class LoginDialog extends BaseActivity {
             @Override
             public void onClick(View v) {
                 remoteService.logout();
+                session.loadTree(-1);
                 finish();
             }
         });
@@ -85,8 +85,8 @@ public class LoginDialog extends BaseActivity {
                 new LoginTask(session, usernameEditView.getText().toString(), passView.getText().toString()) {
                     @Override
                     public void goSuccess(Object result) {
+                        session.loadTree(-1);
                         Toast.makeText(getApplicationContext(), "Login ok", Toast.LENGTH_LONG).show();
-                        saveText();
                         if (!TextUtils.isEmpty(goOnExit)) {
                             intent = new Intent(session.getCurrentActivity(), NewArticleActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -120,18 +120,13 @@ public class LoginDialog extends BaseActivity {
         }
     }
 
-    void saveText() {
-        if (usernameEditView == null) return;
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(LOGIN_NAME, usernameEditView.getText().toString());
-        ed.apply();
-    }
-
     void loadText() {
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        String savedUserName = sPref.getString(LOGIN_NAME, "");
-        usernameEditView.setText(savedUserName);
+        if (!TextUtils.isEmpty(remoteService.getUserName()) &&
+                !remoteService.getUserName().equals(RemoteService.EMPTY_USER)) {
+            usernameEditView.setText(remoteService.getUserName());
+        } else {
+            usernameEditView.setText("");
+        }
     }
 
 }

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.LocalUtils;
+import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
 import ru.vif2ne.ui.adapter.EntryRecyclerAdapter;
@@ -99,6 +100,8 @@ public class MainActivity extends BaseActivity {
 
 
         session.loadPrefs();
+        EventEntries.loadHeaderDb(session);
+
         if (session.getEventEntries().getLastEvent() == -1) {
             session.loadTree(-1);
         }
@@ -186,7 +189,7 @@ public class MainActivity extends BaseActivity {
     public void refreshBottomMenu() {
         for (int i = 0; i < toolbarBottom.getMenu().size(); i++) {
             MenuItem menuItem = toolbarBottom.getMenu().getItem(i);
-/*
+
             if (menuItem.getTitle().equals(getResources().getString(R.string.menu_sign_in))) {
                 if (remoteService.isAuthenticated()) {
                     menuItem.setIcon(R.drawable.ic_action_person);
@@ -194,7 +197,6 @@ public class MainActivity extends BaseActivity {
                     menuItem.setIcon(R.drawable.ic_action_person_outline);
                 }
             }
-*/
 
             if (menuItem.getTitle().equals(getResources().getString(R.string.menu_up))) {
                 if (!getParentEventEntry().isRoot() && getMode() == Session.TREE_MODE) {
@@ -273,13 +275,12 @@ public class MainActivity extends BaseActivity {
                             showNonBlockingProgress();
                         }
                         break;
-/*
+
                     case R.id.bottom_menu_auth:
                         session.navigate(null);
                         intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
                         session.getCurrentActivity().startActivity(intent);
                         break;
-*/
                     case R.id.bottom_menu_favorites:
                         showFavorites();
                         break;

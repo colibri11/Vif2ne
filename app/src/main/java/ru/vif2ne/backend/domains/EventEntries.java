@@ -75,11 +75,32 @@ public class EventEntries {
         return cnt;
     }
 
+    public static long loadHeaderDb(Session session) {
+        SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
+        Cursor c = readableDatabase.query("events", null, "id = ?",
+                new String[]{"1"}, null, null, null);
+        long lastEvent = -1;
+
+        if (c != null) {
+            if (c.moveToFirst()) {
+                lastEvent = c.getLong(c.getColumnIndex("last"));
+                session.getRemoteService().setUserName(c.getString(c.getColumnIndex("username")));
+                session.getRemoteService().setPasswd(
+                        LocalUtils.dec(c.getString(c.getColumnIndex("code"))));
+            }
+            c.close();
+        }
+        return lastEvent;
+    }
+
     public void clearEntriesDB() {
         lastEvent = -1;
-        if (eventEntries.size() > 0) {
+/*        if (eventEntries.size() > 0) {
             rootEntry = eventEntries.get(0);
         } else
+            rootEntry = new EventEntry();
+            */
+        if (rootEntry == null)
             rootEntry = new EventEntry();
         eventEntries.clear();
         eventEntries.add(rootEntry);
@@ -107,7 +128,7 @@ public class EventEntries {
         int i = 0;
         try {
             SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
-            if (TextUtils.isEmpty(username)) username = "anonymouse";
+            if (TextUtils.isEmpty(username)) username = RemoteService.EMPTY_USER;
             Cursor c = readableDatabase.query("events", null, "id = ? and username = ?", new String[]{"1", username}, null, null, null);
             lastEvent = -1;
             refreshDate = new Date();
@@ -333,12 +354,12 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void setLastEvent(String lastEvent) {
-        this.lastEvent = Long.parseLong(lastEvent);
-    }
-
     public void setLastEvent(long lastEvent) {
         this.lastEvent = lastEvent;
+    }
+
+    public void setLastEvent(String lastEvent) {
+        this.lastEvent = Long.parseLong(lastEvent);
     }
 
     @Override

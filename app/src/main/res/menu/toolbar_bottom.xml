@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2015 by Sergey Omarov
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +18,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!--
-        <item
-            android:id="@+id/bottom_menu_auth"
-            android:icon="@drawable/ic_action_person_outline"
-            android:orderInCategory="90"
-            android:title="@string/menu_sign_in"
-            app:showAsAction="always" />
-    -->
+    <item
+        android:id="@+id/bottom_menu_auth"
+        android:icon="@drawable/ic_action_person_outline"
+        android:orderInCategory="90"
+        android:title="@string/menu_sign_in"
+        app:showAsAction="always" />
     <item
         android:id="@+id/bottom_menu_home"
         android:icon="@drawable/ic_action_home"

@@ -49,10 +49,12 @@ public abstract class LoadEventTask extends AbstractTask {
     @Override
     protected Object remoteCall() throws ApplicationException {
         try {
-            if (session.getEventEntries() == null &&
-                    !TextUtils.isEmpty(session.getRemoteService().getUserName()) &&
-                    !TextUtils.isEmpty(session.getRemoteService().getPasswd())) {
+            if (!remoteService.isAuthenticated() &&
+                    !TextUtils.isEmpty(remoteService.getUserName()) &&
+                    !TextUtils.isEmpty(remoteService.getPasswd())) {
                 try {
+                    Log.d(LOG_TAG, "login");
+
                     remoteService.login(session.getRemoteService().getUserName(),
                             session.getRemoteService().getPasswd());
                 } catch (ApplicationException ae) {

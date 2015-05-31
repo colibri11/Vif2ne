@@ -190,6 +190,7 @@ public class RemoteService {
                 }
                 case 401: {
                     basicAuth = "";
+                    setPasswd("");
                     throw new ApplicationException("Неверный пароль", ApplicationException.SC_BAD_PASSWD);
                 }
                 default: {

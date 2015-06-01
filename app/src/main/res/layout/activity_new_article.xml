@@ -85,7 +85,8 @@
                 android:id="@+id/entry_new_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/subject" />
+                android:hint="@string/subject"
+                android:maxLength="80" />
         </LinearLayout>
 
         <ScrollView

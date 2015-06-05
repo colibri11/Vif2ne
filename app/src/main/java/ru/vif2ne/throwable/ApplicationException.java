@@ -18,9 +18,15 @@
 
 package ru.vif2ne.throwable;
 
-import java.security.GeneralSecurityException;
+import org.xmlpull.v1.XmlPullParserException;
 
-public class ApplicationException extends GeneralSecurityException {
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.HttpURLConnection;
+import java.text.ParseException;
+
+public class ApplicationException extends Exception {
 
 
     public static final int SC_EMPTY_RESULT = 1;
@@ -28,7 +34,10 @@ public class ApplicationException extends GeneralSecurityException {
     public static final int SC_BAD_XML = 3;
     public static final int SC_BAD_DATE_FORMAT = 4;
     public static final int SC_BAD_PASSWD = 5;
+    public static final int APP_ERROR_PARSE = 1001;
     private Integer code;
+
+    private Throwable throwable;
 
     public ApplicationException(String msg, int code) {
         super(msg);
@@ -42,8 +51,33 @@ public class ApplicationException extends GeneralSecurityException {
         super(message, cause);
     }
 
-    public ApplicationException(Throwable cause) {
-        super(cause);
+    public ApplicationException(Throwable throwable) {
+        super(throwable);
+        this.throwable = throwable;
+        this.code = extractCode(throwable);
+    }
+
+    private static int extractCode(Throwable throwable) {
+        int res;
+        if (throwable instanceof FileNotFoundException) {
+            res = HttpURLConnection.HTTP_NOT_FOUND;
+        } else if (throwable instanceof NullPointerException) {
+            res = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        } else if (throwable instanceof IOException) {
+            res = HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+        } else if (throwable instanceof XmlPullParserException) {
+            res = APP_ERROR_PARSE;
+        } else if (throwable instanceof ParseException) {
+            res = APP_ERROR_PARSE;
+        } else if (throwable instanceof UndeclaredThrowableException) {
+            if (throwable.getCause() != null)
+                res = extractCode(throwable.getCause());
+            else
+                res = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        } else {
+            res = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        }
+        return res;
     }
 
     public Integer getCode() {

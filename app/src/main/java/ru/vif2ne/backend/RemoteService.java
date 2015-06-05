@@ -44,6 +44,7 @@ import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.EventEntries;
+import ru.vif2ne.backend.domains.Smoking;
 import ru.vif2ne.throwable.ApplicationException;
 
 public class RemoteService {
@@ -53,6 +54,8 @@ public class RemoteService {
     public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
     public static final String URL_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
     public static final String URL_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
+
+    public static final String URL_SMOKING = "http://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
 
     public static final String EMPTY_USER = "anonymouse";
     private static final String LOG_TAG = "RemoteService";
@@ -135,6 +138,7 @@ public class RemoteService {
         }
     }
 
+
     public String postArticle(String urlPost, Article article) throws IOException, ApplicationException {
         if (article == null) return null;
         String qry = article.getQuery();
@@ -201,6 +205,28 @@ public class RemoteService {
         } finally {
             connection.disconnect();
         }
+    }
+
+
+    public Boolean loadSmoking (Smoking smoking) throws ApplicationException, IOException, ParseException, XmlPullParserException {
+        URL url = new URL(String.format(URL_SMOKING, smoking.getLastId()));
+        Log.d(LOG_TAG, url.toString());
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        auth(urlConnection);
+        Context ctx = session.getApplication().getApplicationContext();
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK)
+                throw new ApplicationException(String.format(
+                        ctx.getResources().getString(R.string.error_get_xml_smoking), responseCode),
+                        responseCode);
+            return new Vif2NeXmlSmokingParser().parse(smoking, in);
+        } finally {
+            resetCookie(urlConnection);
+            urlConnection.disconnect();
+        }
+
     }
 
     public Boolean loadEventEntries(EventEntries entries, long lastEventId) throws IOException, XmlPullParserException, ParseException, ApplicationException {

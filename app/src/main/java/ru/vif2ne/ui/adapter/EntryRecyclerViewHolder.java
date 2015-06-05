@@ -226,6 +226,11 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
         // entryChild.setText(Integer.toString(eventEntry.getChildEventEntries().size()));
         if (eventEntry.getParentEventEntry() != null && eventEntry.getParentEventEntry().isRoot()) {
             entryChild.setText(cntEvent + ((newEvent == 0) ? "" : " нов:" + newEvent));
+            if (newEvent > 0) {
+                entryChild.setTextColor(view.getResources().getColor(R.color.newEntry));
+            } else {
+                entryChild.setTextColor(view.getResources().getColor(R.color.primary_text));
+            }
             entryChild.setVisibility(View.VISIBLE);
             signView.setVisibility(View.VISIBLE);
         } else {

@@ -30,7 +30,9 @@ import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.DBHelper;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
+import ru.vif2ne.backend.domains.Smoking;
 import ru.vif2ne.backend.tasks.LoadEventTask;
+import ru.vif2ne.backend.tasks.LoadSmokingTask;
 import ru.vif2ne.backend.tasks.TasksContainer;
 import ru.vif2ne.ui.MainActivity;
 
@@ -61,14 +63,31 @@ public class Session {
     private Boolean credentialStatus;
     private boolean findUser;
 
+    private Smoking smoking;
+
     public Session(MainApplication application) {
         this.application = application;
         this.tasksContainer = new TasksContainer(this);
         this.remoteService = new RemoteService(this);
         this.eventEntries = new EventEntries(this);
         this.eventEntry = eventEntries.get(0);
+        this.smoking = new Smoking();
         this.dbHelper = null;
         this.findUser = false;
+        loadPrefs();
+        EventEntries.loadHeaderDb(this);
+    }
+
+    public void loadSmoking() {
+        Log.d(LOG_TAG, "loadSmoking:" + smoking.getLastId());
+        new LoadSmokingTask(this) {
+            @Override
+            public void goSuccess(Object result) {
+                Log.d(LOG_TAG, "active users:" + smoking.sizeActive());
+                Log.d(LOG_TAG, "messages:" + smoking.sizeMessages());
+                Log.d(LOG_TAG, "lastid:" + smoking.getLastId());
+            }
+        }.execute((Void) null);
     }
 
     public void loadTree(long eventId) {
@@ -207,4 +226,11 @@ public class Session {
     public void setFindUser(boolean findUser) {
         this.findUser = findUser;
     }
+
+
+    public Smoking getSmoking() {
+        return smoking;
+    }
+
+
 }

@@ -80,4 +80,7 @@
     <string name="preference_title">Настройки</string>
     <string name="author_template"><![CDATA[<b>%s</b>]]></string>
     <string name="author_replay_template">к %s</string>
+    <string name="menu_smoking">Курилка</string>
+    <string name="error_get_xml_smoking">Ошибка загрузки курилки</string>
+    <string name="title_smoking_activity">Курилка</string>
 </resources>

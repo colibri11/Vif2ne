@@ -39,7 +39,6 @@ import java.util.ArrayList;
 
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
-import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
 import ru.vif2ne.ui.adapter.EntryRecyclerAdapter;
@@ -110,10 +109,6 @@ public class MainActivity extends BaseActivity {
         recyclerView.setItemAnimator(itemAnimator);
 
         recyclerView.setAdapter(adapter);
-
-
-        session.loadPrefs();
-        EventEntries.loadHeaderDb(session);
 
         if (session.getEventEntries().getLastEvent() == -1) {
             session.loadTree(-1);
@@ -192,7 +187,15 @@ public class MainActivity extends BaseActivity {
                     menuItem.setIcon(R.drawable.ic_action_person_outline);
                 }
             }
-
+            if (menuItem.getTitle().equals(getResources().getString(R.string.menu_smoking))) {
+                if (remoteService.isAuthenticated()) {
+                    menuItem.setEnabled(true);
+                    menuItem.setIcon(R.drawable.ic_action_smoking);
+                } else {
+                    menuItem.setEnabled(false);
+                    menuItem.setIcon(R.drawable.ic_action_smoking_disable);
+                }
+            }
             if (menuItem.getTitle().equals(getResources().getString(R.string.menu_up))) {
                 if (!getParentEventEntry().isRoot() && getMode() == Session.TREE_MODE) {
                     menuItem.setEnabled(true);
@@ -261,6 +264,10 @@ public class MainActivity extends BaseActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent;
                 switch (item.getItemId()) {
+                    case R.id.bottom_menu_smoking:
+                        intent = new Intent(session.getCurrentActivity(), SmokingActivity.class);
+                        session.getCurrentActivity().startActivity(intent);
+                        break;
                     case R.id.bottom_menu_home:
                         session.navigate(null);
                         break;

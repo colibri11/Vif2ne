@@ -19,10 +19,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/bottom_menu_smoking"
+        android:icon="@drawable/ic_action_smoking"
+        android:orderInCategory="80"
+        android:title="@string/menu_smoking"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/bottom_menu_auth"
         android:icon="@drawable/ic_action_person_outline"
         android:orderInCategory="90"
         android:title="@string/menu_sign_in"
+        android:visible="false"
         app:showAsAction="always" />
     <item
         android:id="@+id/bottom_menu_home"

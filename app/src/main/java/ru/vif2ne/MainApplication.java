@@ -20,13 +20,16 @@ package ru.vif2ne;
 
 import android.app.Application;
 
+
 public class MainApplication extends Application {
     protected Session session;
 
 
-    public MainApplication() {
-        this.session = new Session(this);
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        this.session = new Session(this);
     }
 
     public Session getSession() {

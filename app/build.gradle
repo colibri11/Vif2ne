@@ -1,14 +1,77 @@
+import java.util.regex.Pattern
+
 apply plugin: 'com.android.application'
+
+def incrementVersionCode() {
+    def manifestFile = file("src/main/version")
+    def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
+    def manifestText = manifestFile.getText()
+    def matcher = pattern.matcher(manifestText)
+    matcher.find()
+    def versionCode = Integer.parseInt(matcher.group(1))
+    System.out.println(versionCode)
+    def manifestContent = matcher.replaceAll("versionCode=\"" + ++versionCode + "\"")
+    manifestFile.write(manifestContent)
+}
+
+
+def incrementReleaseVersionName() {
+    println(":incrementVersionName - Release Incrementing Version Name...")
+    def manifestFile = file("src/main/version")
+    def patternVersionNumber = Pattern.compile("versionName=\"(\\d+)\\.(\\d+)\\.(\\d+)\"")
+    def manifestText = manifestFile.getText()
+    def matcherVersionNumber = patternVersionNumber.matcher(manifestText)
+    matcherVersionNumber.find()
+    def branchVersion = Integer.parseInt(matcherVersionNumber.group(1))
+    def majorVersion = Integer.parseInt(matcherVersionNumber.group(2))
+    def minorVersion = Integer.parseInt(matcherVersionNumber.group(3))
+    def mVersionName = branchVersion + "." + majorVersion + "." + minorVersion
+    def mNextVersionName = branchVersion + "." + (majorVersion + 1) + ".0"
+    def manifestContent = matcherVersionNumber.replaceAll("versionName=\"" + mNextVersionName + "\"")
+    println(":incrementVersionName - current versionName=" + mVersionName);
+    println(":incrementVersionName - new versionName=" + mNextVersionName);
+    manifestFile.write(manifestContent)
+}
+
+def incrementDebugVersionName() {
+    println(":incrementVersionName - Debug Incrementing Version Name...")
+    def manifestFile = file("src/main/version")
+    def patternVersionNumber = Pattern.compile("versionName=\"(\\d+)\\.(\\d+)\\.(\\d+)\"")
+    def manifestText = manifestFile.getText()
+    def matcherVersionNumber = patternVersionNumber.matcher(manifestText)
+    matcherVersionNumber.find()
+    def branchVersion = Integer.parseInt(matcherVersionNumber.group(1))
+    def majorVersion = Integer.parseInt(matcherVersionNumber.group(2))
+    def minorVersion = Integer.parseInt(matcherVersionNumber.group(3))
+    def mVersionName = branchVersion + "." + majorVersion + "." + minorVersion
+    def mNextVersionName = branchVersion + "." + majorVersion + "." + (minorVersion + 1)
+    def manifestContent = matcherVersionNumber.replaceAll("versionName=\"" + mNextVersionName + "\"")
+    println(":incrementVersionName - current versionName=" + mVersionName);
+    println(":incrementVersionName - new versionName=" + mNextVersionName);
+    manifestFile.write(manifestContent)
+}
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+
+    def runTasks = gradle.startParameter.taskNames
+    if (':app:assembleRelease' in runTasks) {
+        incrementVersionCode();
+        incrementReleaseVersionName();
+    } else if (':app:assembleDebug' in runTasks) {
+        incrementVersionCode();
+        incrementDebugVersionName();
+    } else {
+        println("!!!!>" + runTasks.dump());
+    }
+
     defaultConfig {
         applicationId "ru.vif2ne"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 3
-        versionName "3.0"
+        versionCode 6
+        versionName "3.3"
     }
     buildTypes {
         release {
@@ -23,8 +86,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.android.support:recyclerview-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
     //   compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
     compile('com.mikepenz.materialdrawer:library:2.9.2@aar') {
         transitive = true

@@ -6,6 +6,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.EditText;
 
 import ru.vif2ne.R;
 import ru.vif2ne.backend.tasks.LoadSmokingTask;
@@ -19,6 +23,7 @@ public class SmokingActivity extends BaseActivity {
     private static final String LOG_TAG = "SmokingActivity";
     private SmokeRecyclerAdapter adapter;
     private SwipeRefreshLayout swipeRefresh;
+    private EditText messageEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,20 @@ public class SmokingActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
         }
+
+        messageEdit = (EditText) findViewById(R.id.message_edit);
+        messageEdit.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    if (event.getAction() == KeyEvent.ACTION_UP) {
+                        Log.d(LOG_TAG, "key code:" + keyCode + " keyEvent:" + event.toString());
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_smoking_messages);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

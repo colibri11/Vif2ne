@@ -71,7 +71,8 @@
                     android:id="@+id/entry_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="New Text" />
+                    android:text="New Text"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

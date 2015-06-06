@@ -31,6 +31,7 @@ import ru.vif2ne.backend.domains.DBHelper;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.domains.Smoking;
+import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.backend.tasks.LoadEventTask;
 import ru.vif2ne.backend.tasks.LoadSmokingTask;
 import ru.vif2ne.backend.tasks.TasksContainer;
@@ -51,6 +52,8 @@ public class Session {
     protected EventEntries eventEntries;
 
     protected EventEntry eventEntry;
+    protected UserSettings userSettings;
+
 
     protected RemoteService remoteService;
 
@@ -74,6 +77,7 @@ public class Session {
         this.smoking = new Smoking();
         this.dbHelper = null;
         this.findUser = false;
+        this.userSettings = null;
         loadPrefs();
         EventEntries.loadHeaderDb(this);
     }
@@ -232,5 +236,11 @@ public class Session {
         return smoking;
     }
 
+    public UserSettings getUserSettings() {
+        return userSettings;
+    }
 
+    public void setUserSettings(UserSettings userSettings) {
+        this.userSettings = userSettings;
+    }
 }

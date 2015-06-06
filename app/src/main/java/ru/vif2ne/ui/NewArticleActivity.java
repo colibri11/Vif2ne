@@ -41,6 +41,7 @@ import ru.vif2ne.backend.LocalUtils;
 import ru.vif2ne.backend.RemoteService;
 import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.EventEntry;
+import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.backend.tasks.PostArticleTask;
 
 public class NewArticleActivity extends BaseActivity {
@@ -57,6 +58,7 @@ public class NewArticleActivity extends BaseActivity {
 
     protected Button postAction, previewAction, clearAction;
     protected Boolean post;
+    private String refTitle;
 
 
     @Override
@@ -106,8 +108,10 @@ public class NewArticleActivity extends BaseActivity {
         clearAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                entryNewTitle.setText("");
-                entryEditArticle.setText("");
+                entryNewTitle.setText(refTitle);
+                UserSettings us = session.getUserSettings();
+                entryEditArticle.setText(us.getHeaderMessage() +
+                        us.getFooterMessage());
                 entryToRoot.setChecked(false);
                 entryNewTitle.requestFocus();
             }
@@ -115,17 +119,12 @@ public class NewArticleActivity extends BaseActivity {
         postAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                webPost();
-
                 new PostArticleTask(session, RemoteService.URL_POST, setArticle()) {
                     @Override
                     public void goSuccess(Object result) {
                         session.setWebContent((String) result);
                         session.loadTree(session.getEventEntries().getLastEvent());
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.refreshing_tree), Toast.LENGTH_SHORT).show();
-//                        editArticleLayout.setVisibility(View.GONE);
-//                        webView.setVisibility(View.VISIBLE);
-//                        webView.loadDataWithBaseURL(RemoteService.URL_POST.substring(0, RemoteService.URL_POST.length() - 3), (String) result, "text/html", "windows-1251", "about:blank");
                         finish();
                     }
                 }.execute((Void) null);
@@ -206,16 +205,21 @@ public class NewArticleActivity extends BaseActivity {
             entryDateView.setText(LocalUtils.formatDateTime(this, eventEntry.getDate()));
             entryUserNameView.setText("К:" + eventEntry.getAuthor());
             entryTitleView.setText(eventEntry.getTitleArticle());
-            String s = eventEntry.getTitleArticle();
-            if (!TextUtils.isEmpty(s)) {
-                if (s.indexOf("Re:") != 0) s = "Re:" + s;
-                entryNewTitle.setText(s);
+            refTitle = eventEntry.getTitleArticle();
+            if (!TextUtils.isEmpty(refTitle)) {
+                if (refTitle.indexOf("Re:") != 0) refTitle = "Re:" + refTitle;
+                entryNewTitle.setText(refTitle);
             }
+            String quote = "";
             if (eventEntry.getArticle() != null) {
-                entryEditArticle.setText(">" + Jsoup.parse(eventEntry.getArticle().replace("<BR>", "*%*")).text().replace("*%*", "\n>"));
-            } else {
-                entryEditArticle.setText("");
+                quote = ">" + Jsoup.parse(eventEntry.getArticle().replace("<BR>", "*%*")).text().replace("*%*", "\n>");
             }
+            UserSettings us = session.getUserSettings();
+            entryEditArticle.setText(
+                    (us.isQuote() ? quote + "\n" : "") +
+                            us.getHeaderMessage() +
+                            us.getFooterMessage()
+            );
         }
     }
 

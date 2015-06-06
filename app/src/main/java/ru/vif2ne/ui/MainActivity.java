@@ -40,7 +40,9 @@ import java.util.ArrayList;
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.EventEntry;
+import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
+import ru.vif2ne.backend.tasks.LoadSettingsTask;
 import ru.vif2ne.ui.adapter.EntryRecyclerAdapter;
 
 public class MainActivity extends BaseActivity {
@@ -298,8 +300,19 @@ public class MainActivity extends BaseActivity {
                             */
                             Toast.makeText(activity, getResources().getString(R.string.not_login), Toast.LENGTH_SHORT).show();
                         } else {
-                            intent = new Intent(session.getCurrentActivity(), NewArticleActivity.class);
-                            session.getCurrentActivity().startActivity(intent);
+                            if (session.getUserSettings() == null) {
+                                new LoadSettingsTask(session) {
+                                    @Override
+                                    public void goSuccess(Object result) {
+                                        session.setUserSettings((UserSettings) result);
+                                        Intent intent = new Intent(session.getCurrentActivity(), NewArticleActivity.class);
+                                        session.getCurrentActivity().startActivity(intent);
+                                    }
+                                }.execute((Void) null);
+                            } else {
+                                intent = new Intent(session.getCurrentActivity(), NewArticleActivity.class);
+                                session.getCurrentActivity().startActivity(intent);
+                            }
                         }
                         break;
                     case R.id.bottom_menu_download_tree:

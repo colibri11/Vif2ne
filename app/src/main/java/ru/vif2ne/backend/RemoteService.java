@@ -45,6 +45,7 @@ import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.Smoking;
+import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.throwable.ApplicationException;
 
 public class RemoteService {
@@ -54,6 +55,7 @@ public class RemoteService {
     public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
     public static final String URL_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
     public static final String URL_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
+    public static final String URL_SETTINGS = "http://vif2ne.ru/nvk/forum/0/security/opt?msg";
 
     public static final String URL_SMOKING = "http://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
 
@@ -262,6 +264,21 @@ public class RemoteService {
             resetCookie(urlConnection);
             urlConnection.disconnect();
         }
+    }
+
+    public UserSettings loadSettings() throws IOException {
+        URL url = new URL(URL_SETTINGS);
+        Log.d(LOG_TAG, url.toString());
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        auth(urlConnection);
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            return new UserSettings(NetUtils.readStreamToString(in, "windows-1251"));
+        } finally {
+            resetCookie(urlConnection);
+            urlConnection.disconnect();
+        }
+
     }
 
     public String loadArticle(long articleNo) throws IOException, ApplicationException {

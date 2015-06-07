@@ -19,6 +19,16 @@ public class Smoking {
         lastId = 0;
     }
 
+    public int getMessagePositionByAnchor(String anchor) {
+        int i = 0;
+        for (SmokingMessage message : smokingMessages) {
+            if (anchor.equals(message.getAnchor()))
+                return i;
+            i++;
+        }
+        return 0;
+    }
+
     public int sizeMessages() {
         return smokingMessages.size();
     }

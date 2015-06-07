@@ -42,6 +42,13 @@ public class WebActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
         webView = (WebView) findViewById(R.id.web_view);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+            }
+
+        });
 
     }
 

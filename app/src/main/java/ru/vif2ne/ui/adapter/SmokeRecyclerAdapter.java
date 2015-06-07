@@ -18,16 +18,18 @@ public class SmokeRecyclerAdapter extends RecyclerView.Adapter<SmokeRecyclerView
     protected LinearLayoutManager linearLayoutManager;
     private Session session;
     private Smoking smoking;
+    private LinearLayoutManager layoutManager;
 
-    public SmokeRecyclerAdapter(Session session) {
+    public SmokeRecyclerAdapter(Session session, LinearLayoutManager layoutManager) {
         this.session = session;
         this.smoking = session.getSmoking();
+        this.layoutManager = layoutManager;
     }
 
     @Override
     public SmokeRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoking_recycler_layout, parent, false);
-        return new SmokeRecyclerViewHolder(session, v);
+        return new SmokeRecyclerViewHolder(session, v, layoutManager);
     }
 
     @Override

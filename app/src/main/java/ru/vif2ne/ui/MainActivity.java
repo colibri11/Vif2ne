@@ -40,9 +40,11 @@ import java.util.ArrayList;
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.EventEntry;
+import ru.vif2ne.backend.domains.SmokingSettings;
 import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.backend.tasks.LoadArticleTreeTask;
 import ru.vif2ne.backend.tasks.LoadSettingsTask;
+import ru.vif2ne.backend.tasks.LoadSmokingSettingsTask;
 import ru.vif2ne.ui.adapter.EntryRecyclerAdapter;
 
 public class MainActivity extends BaseActivity {
@@ -266,10 +268,6 @@ public class MainActivity extends BaseActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent;
                 switch (item.getItemId()) {
-                    case R.id.bottom_menu_smoking:
-                        intent = new Intent(session.getCurrentActivity(), SmokingActivity.class);
-                        session.getCurrentActivity().startActivity(intent);
-                        break;
                     case R.id.bottom_menu_home:
                         session.navigate(null);
                         break;
@@ -292,12 +290,23 @@ public class MainActivity extends BaseActivity {
                             session.navigate(getParentEventEntry().getParentEventEntry());
                         }
                         break;
+                    case R.id.bottom_menu_smoking:
+                        if (session.getSmokingSettings() == null) {
+                            new LoadSmokingSettingsTask(session) {
+                                @Override
+                                public void goSuccess(Object result) {
+                                    session.setSmokingSettings((SmokingSettings) result);
+                                    Intent intent = new Intent(session.getCurrentActivity(), SmokingActivity.class);
+                                    session.getCurrentActivity().startActivity(intent);
+                                }
+                            }.execute((Void) null);
+                        } else {
+                            intent = new Intent(session.getCurrentActivity(), SmokingActivity.class);
+                            session.getCurrentActivity().startActivity(intent);
+                        }
+                        break;
                     case R.id.bottom_menu_add:
                         if (!remoteService.isAuthenticated()) {
-                        /*    intent = new Intent(session.getCurrentActivity(), LoginDialog.class);
-                            intent.putExtra("goto", "add");
-                            session.getCurrentActivity().startActivity(intent);
-                            */
                             Toast.makeText(activity, getResources().getString(R.string.not_login), Toast.LENGTH_SHORT).show();
                         } else {
                             if (session.getUserSettings() == null) {

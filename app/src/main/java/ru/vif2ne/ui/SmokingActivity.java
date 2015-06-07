@@ -1,6 +1,7 @@
 package ru.vif2ne.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,8 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ru.vif2ne.R;
 import ru.vif2ne.backend.tasks.LoadSmokingTask;
@@ -21,9 +26,12 @@ import ru.vif2ne.ui.adapter.SmokeRecyclerAdapter;
 public class SmokingActivity extends BaseActivity {
 
     private static final String LOG_TAG = "SmokingActivity";
+    Handler handler;
     private SmokeRecyclerAdapter adapter;
     private SwipeRefreshLayout swipeRefresh;
     private EditText messageEdit;
+    private Timer timer;
+    private TimerTask timerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,8 @@ public class SmokingActivity extends BaseActivity {
         setSupportActionBar(toolbarTop);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         messageEdit = (EditText) findViewById(R.id.message_edit);
@@ -51,7 +61,7 @@ public class SmokingActivity extends BaseActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_smoking_messages);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        adapter = new SmokeRecyclerAdapter(session);
+        adapter = new SmokeRecyclerAdapter(session, layoutManager);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(itemAnimator);
@@ -60,13 +70,36 @@ public class SmokingActivity extends BaseActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-               refreshing();
+                refreshing();
             }
         });
-        refreshing();
+        handler = new Handler();
+
+        //refreshing();
     }
 
-    public void refreshing(){
+
+    public void startTimer() {
+        timer = new Timer();
+        intTimerTask();
+        timer.schedule(timerTask, 0, session.getSmokingSettings().getRefresh() * 1000); //
+    }
+
+    public void intTimerTask() {
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshing();
+                    }
+                });
+            }
+        };
+    }
+
+    public void refreshing() {
         swipeRefresh.setEnabled(false);
         swipeRefresh.setRefreshing(true);
         new LoadSmokingTask(session) {
@@ -77,10 +110,35 @@ public class SmokingActivity extends BaseActivity {
                 swipeRefresh.setRefreshing(false);
             }
         }.execute((Void) null);
-    };
+    }
 
     @Override
     protected void bind() {
+        startTimer();
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = null;
+            timerTask = null;
+        }
+        super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

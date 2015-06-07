@@ -31,6 +31,7 @@ import ru.vif2ne.backend.domains.DBHelper;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.domains.Smoking;
+import ru.vif2ne.backend.domains.SmokingSettings;
 import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.backend.tasks.LoadEventTask;
 import ru.vif2ne.backend.tasks.LoadSmokingTask;
@@ -67,6 +68,7 @@ public class Session {
     private boolean findUser;
 
     private Smoking smoking;
+    private SmokingSettings smokingSettings;
 
     public Session(MainApplication application) {
         this.application = application;
@@ -78,6 +80,7 @@ public class Session {
         this.dbHelper = null;
         this.findUser = false;
         this.userSettings = null;
+        this.smokingSettings = null;
         loadPrefs();
         EventEntries.loadHeaderDb(this);
     }
@@ -242,5 +245,13 @@ public class Session {
 
     public void setUserSettings(UserSettings userSettings) {
         this.userSettings = userSettings;
+    }
+
+    public SmokingSettings getSmokingSettings() {
+        return smokingSettings;
+    }
+
+    public void setSmokingSettings(SmokingSettings smokingSettings) {
+        this.smokingSettings = smokingSettings;
     }
 }

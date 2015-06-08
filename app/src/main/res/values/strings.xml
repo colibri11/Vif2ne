@@ -83,4 +83,5 @@
     <string name="menu_smoking">Курилка</string>
     <string name="error_get_xml_smoking">Ошибка загрузки курилки</string>
     <string name="title_smoking_activity">Курилка</string>
+    <string name="menu_smoking_send">Отправить сообщение</string>
 </resources>

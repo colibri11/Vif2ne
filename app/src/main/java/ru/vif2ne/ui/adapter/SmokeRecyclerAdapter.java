@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
@@ -18,18 +19,19 @@ public class SmokeRecyclerAdapter extends RecyclerView.Adapter<SmokeRecyclerView
     protected LinearLayoutManager linearLayoutManager;
     private Session session;
     private Smoking smoking;
-    private LinearLayoutManager layoutManager;
+    private EditText editText;
 
-    public SmokeRecyclerAdapter(Session session, LinearLayoutManager layoutManager) {
+    public SmokeRecyclerAdapter(Session session, EditText editText) {
         this.session = session;
         this.smoking = session.getSmoking();
-        this.layoutManager = layoutManager;
+        this.editText = editText;
+
     }
 
     @Override
     public SmokeRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoking_recycler_layout, parent, false);
-        return new SmokeRecyclerViewHolder(session, v, layoutManager);
+        return new SmokeRecyclerViewHolder(v, editText);
     }
 
     @Override

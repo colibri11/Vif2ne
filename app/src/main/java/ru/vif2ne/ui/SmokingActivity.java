@@ -1,5 +1,7 @@
 package ru.vif2ne.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -7,6 +9,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -19,12 +24,14 @@ import java.util.TimerTask;
 import ru.vif2ne.R;
 import ru.vif2ne.backend.tasks.LoadSmokingTask;
 import ru.vif2ne.ui.adapter.SmokeRecyclerAdapter;
+import ru.vif2ne.ui.helper.DividerItemDecoration;
 
 /**
  * Created by serg on 05.06.15.
  */
 public class SmokingActivity extends BaseActivity {
 
+    public static final String SCHEME = "vif2ne";
     private static final String LOG_TAG = "SmokingActivity";
     Handler handler;
     private SmokeRecyclerAdapter adapter;
@@ -32,11 +39,16 @@ public class SmokingActivity extends BaseActivity {
     private EditText messageEdit;
     private Timer timer;
     private TimerTask timerTask;
+    private int reloadStartTime;
+    private String anchor;
+    private LinearLayoutManager layoutManager;
+    private TextWatcher messageTextWather;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smoking);
+        reloadStartTime = 0;
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         setSupportActionBar(toolbarTop);
         if (getSupportActionBar() != null) {
@@ -46,6 +58,23 @@ public class SmokingActivity extends BaseActivity {
         }
 
         messageEdit = (EditText) findViewById(R.id.message_edit);
+        messageTextWather = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                session.setSmokingEditMessage(s);
+            }
+        };
+        messageEdit.addTextChangedListener(messageTextWather);
         messageEdit.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -59,13 +88,26 @@ public class SmokingActivity extends BaseActivity {
             }
         });
 
+
+        anchor = "";
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+        if (uri != null) {
+            anchor = intent.getDataString().replace(SCHEME+"://","");
+            reloadStartTime = session.getSmokingSettings().getRefresh() * 1000;
+            Log.d(LOG_TAG, anchor);
+        }
+        Log.d(LOG_TAG, intent.toString());
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_smoking_messages);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        adapter = new SmokeRecyclerAdapter(session, layoutManager);
+        layoutManager = new LinearLayoutManager(this);
+        adapter = new SmokeRecyclerAdapter(session, messageEdit);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -74,6 +116,8 @@ public class SmokingActivity extends BaseActivity {
             }
         });
         handler = new Handler();
+        messageEdit.requestFocus();
+
 
         //refreshing();
     }
@@ -82,7 +126,7 @@ public class SmokingActivity extends BaseActivity {
     public void startTimer() {
         timer = new Timer();
         intTimerTask();
-        timer.schedule(timerTask, 0, session.getSmokingSettings().getRefresh() * 1000); //
+        timer.schedule(timerTask, reloadStartTime, session.getSmokingSettings().getRefresh() * 1000); //
     }
 
     public void intTimerTask() {
@@ -115,7 +159,16 @@ public class SmokingActivity extends BaseActivity {
     @Override
     protected void bind() {
         startTimer();
+        messageEdit.removeTextChangedListener(messageTextWather);
+        messageEdit.setText(session.getSmokingEditMessage());
+        messageEdit.addTextChangedListener(messageTextWather);
         adapter.notifyDataSetChanged();
+        if (!TextUtils.isEmpty(anchor)) {
+            int position = session.getSmoking().getMessagePositionByAnchor(anchor);
+            layoutManager.scrollToPositionWithOffset(position, 0);
+            anchor = "";
+        }
+
     }
 
     @Override

@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -69,6 +70,7 @@ public class Session {
 
     private Smoking smoking;
     private SmokingSettings smokingSettings;
+    private Editable smokingEditMessage;
 
     public Session(MainApplication application) {
         this.application = application;
@@ -77,10 +79,7 @@ public class Session {
         this.eventEntries = new EventEntries(this);
         this.eventEntry = eventEntries.get(0);
         this.smoking = new Smoking();
-        this.dbHelper = null;
         this.findUser = false;
-        this.userSettings = null;
-        this.smokingSettings = null;
         loadPrefs();
         EventEntries.loadHeaderDb(this);
     }
@@ -253,5 +252,13 @@ public class Session {
 
     public void setSmokingSettings(SmokingSettings smokingSettings) {
         this.smokingSettings = smokingSettings;
+    }
+
+    public Editable getSmokingEditMessage() {
+        return smokingEditMessage;
+    }
+
+    public void setSmokingEditMessage(Editable smokingEditMessage) {
+        this.smokingEditMessage = smokingEditMessage;
     }
 }

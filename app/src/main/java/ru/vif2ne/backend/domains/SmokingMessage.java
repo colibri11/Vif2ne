@@ -32,16 +32,30 @@ public class SmokingMessage {
         String href;
         for (Element element : doc.select("a")) {
             href = element.attr("href");
-            if (i == 0) {
-                anchor = element.attr("name");
-                time = anchor.split(", ", 2)[1];
-            } else if (i == 2) {
-                author = element.text();
-            } else if (i >= 3 && href.startsWith("#")) {
-                recipient.add(href.substring(1));
-                element.remove();
+            switch (i) {
+                case 0: {
+                    anchor = element.attr("name");
+                    time = anchor.split(", ", 2)[1];
+                    element.remove();
+                    break;
+                }
+                case 1: {
+                    element.remove();
+                    break;
+                }
+                case 2: {
+                    author = element.text();
+                    element.remove();
+                    break;
+                }
+                default: {
+                    if (href.startsWith("#")) {
+                        recipient.add(href.substring(1));
+                        element.attr("href", "vif2ne://" +href.substring(1));
+                    }
+                }
             }
-            if (i < 3) element.remove();
+        //    if (i < 3) element.remove();
             i++;
         }
         this.message = doc.toString();

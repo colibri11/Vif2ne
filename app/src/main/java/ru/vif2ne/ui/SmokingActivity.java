@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ import java.util.TimerTask;
 
 import ru.vif2ne.R;
 import ru.vif2ne.backend.tasks.LoadSmokingTask;
+import ru.vif2ne.backend.tasks.PostSmokingMessageTask;
 import ru.vif2ne.ui.adapter.SmokeRecyclerAdapter;
 import ru.vif2ne.ui.helper.DividerItemDecoration;
 
@@ -43,6 +45,9 @@ public class SmokingActivity extends BaseActivity {
     private String anchor;
     private LinearLayoutManager layoutManager;
     private TextWatcher messageTextWather;
+    private MenuItem menuSend;
+    private boolean refreshNew;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,7 @@ public class SmokingActivity extends BaseActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 session.setSmokingEditMessage(s);
+                sendEnabled();
             }
         };
         messageEdit.addTextChangedListener(messageTextWather);
@@ -99,7 +105,7 @@ public class SmokingActivity extends BaseActivity {
         }
         Log.d(LOG_TAG, intent.toString());
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_smoking_messages);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_smoking_messages);
         layoutManager = new LinearLayoutManager(this);
         adapter = new SmokeRecyclerAdapter(session, messageEdit);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
@@ -112,7 +118,7 @@ public class SmokingActivity extends BaseActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshing();
+                refreshing(true);
             }
         });
         handler = new Handler();
@@ -120,6 +126,17 @@ public class SmokingActivity extends BaseActivity {
 
 
         //refreshing();
+    }
+
+    private void sendEnabled() {
+        if (menuSend == null) return;
+        if (TextUtils.isEmpty(messageEdit.getText())) {
+            menuSend.setEnabled(false);
+            menuSend.setIcon(R.drawable.ic_action_content_send_disabled);
+        } else {
+            menuSend.setEnabled(true);
+            menuSend.setIcon(R.drawable.ic_action_content_send);
+        }
     }
 
 
@@ -136,14 +153,15 @@ public class SmokingActivity extends BaseActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        refreshing();
+                        refreshing(true);
                     }
                 });
             }
         };
     }
 
-    public void refreshing() {
+    public void refreshing(boolean notRefreshNew) {
+        refreshNew = !notRefreshNew;
         swipeRefresh.setEnabled(false);
         swipeRefresh.setRefreshing(true);
         new LoadSmokingTask(session) {
@@ -152,6 +170,10 @@ public class SmokingActivity extends BaseActivity {
                 adapter.notifyDataSetChanged();
                 swipeRefresh.setEnabled(true);
                 swipeRefresh.setRefreshing(false);
+                if (refreshNew) {
+                    layoutManager.scrollToPositionWithOffset(0, 0);
+                    messageEdit.setText("");
+                }
             }
         }.execute((Void) null);
     }
@@ -162,6 +184,7 @@ public class SmokingActivity extends BaseActivity {
         messageEdit.removeTextChangedListener(messageTextWather);
         messageEdit.setText(session.getSmokingEditMessage());
         messageEdit.addTextChangedListener(messageTextWather);
+        sendEnabled();
         adapter.notifyDataSetChanged();
         if (!TextUtils.isEmpty(anchor)) {
             int position = session.getSmoking().getMessagePositionByAnchor(anchor);
@@ -188,10 +211,27 @@ public class SmokingActivity extends BaseActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.smoking_menu_send:
+                new PostSmokingMessageTask(session) {
+                    @Override
+                    public void goSuccess(Object result) {
+                        refreshing(false);
+                    }
+                }.execute((Void) null);
+                break;
             default:
                 break;
 
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_smoking_top, menu);
+        menuSend = menu.findItem(R.id.smoking_menu_send);
+        sendEnabled();
+        return true;
+    }
+
 }

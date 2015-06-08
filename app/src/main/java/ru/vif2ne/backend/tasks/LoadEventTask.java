@@ -21,13 +21,6 @@ package ru.vif2ne.backend.tasks;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.text.ParseException;
-
-import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.throwable.ApplicationException;
 
@@ -77,20 +70,10 @@ public abstract class LoadEventTask extends AbstractTask {
                     session.getEventEntries().clearEntriesDB();
                     return remoteService.loadEventEntries(session.getEventEntries(), -1);
                 } else
-                    throw new ApplicationException(e.getMessage(), e.getCode());
+                    throw new ApplicationException(e);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ApplicationException(
-                    session.getApplication().getResources().getString(R.string.exception_network),
-                    HttpURLConnection.HTTP_NOT_ACCEPTABLE
-            );
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-            throw new ApplicationException(session.getApplication().getResources().getString(R.string.xml_error), ApplicationException.SC_BAD_XML);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            throw new ApplicationException(session.getApplication().getResources().getString(R.string.date_format_error), ApplicationException.SC_BAD_DATE_FORMAT);
+        } catch (Exception e) {
+            throw new ApplicationException(e);
         }
 
     }

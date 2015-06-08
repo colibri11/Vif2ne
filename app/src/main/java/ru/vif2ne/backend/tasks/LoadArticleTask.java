@@ -20,9 +20,6 @@ package ru.vif2ne.backend.tasks;
 
 import android.util.Log;
 
-import java.io.IOException;
-
-import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.throwable.ApplicationException;
@@ -51,13 +48,8 @@ public abstract class LoadArticleTask extends AbstractTask {
             Log.d(LOG_TAG, "no:" + eventEntry.getArtNo());
             eventEntry.save(session.getDbHelper().getWritableDatabase());
             return result;
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ApplicationException(
-                    session.getApplication().getResources().
-                            getString(R.string.exception_load_article),
-                    ApplicationException.SC_UNKNOWN
-            );
+        } catch (Exception e) {
+            throw new ApplicationException(e);
         }
     }
 }

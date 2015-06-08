@@ -18,8 +18,6 @@
 
 package ru.vif2ne.backend.tasks;
 
-import java.io.IOException;
-
 import ru.vif2ne.Session;
 import ru.vif2ne.throwable.ApplicationException;
 
@@ -46,14 +44,12 @@ public abstract class LoginTask extends AbstractTask {
 
     @Override
     protected Object remoteCall() throws ApplicationException {
-        Boolean res = false;
         try {
             remoteService.login(user, passwd);
-            res = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return res;
+            return true;
+        } catch (Exception e) {
+            throw new ApplicationException(e);
         }
-        return res;
+
     }
 }

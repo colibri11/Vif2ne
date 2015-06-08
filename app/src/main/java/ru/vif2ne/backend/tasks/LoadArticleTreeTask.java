@@ -21,10 +21,8 @@ package ru.vif2ne.backend.tasks;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import ru.vif2ne.R;
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.throwable.ApplicationException;
@@ -62,13 +60,8 @@ public abstract class LoadArticleTreeTask extends AbstractTask {
                 }
             }
             return i;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            throw new ApplicationException(
-                    session.getApplication().getResources().
-                            getString(R.string.exception_load_article),
-                    ApplicationException.SC_UNKNOWN
-            );
+        } catch (Exception e) {
+            throw new ApplicationException(e);
         } finally {
             tasksContainer.setLock(false);
         }

@@ -22,6 +22,8 @@ import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.Base64;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -108,7 +110,18 @@ public class LocalUtils {
 
     }
 
-
+    public static String encode(String value) {
+        try {
+            return URLEncoder.encode(
+                    new String(value
+                            .replace("\"", "&quot;")
+                            .replace("\n", "\r\n")
+                            .getBytes(), "UTF-8"), "windows-1251").replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }
 
 

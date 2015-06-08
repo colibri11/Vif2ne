@@ -45,6 +45,7 @@ import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.backend.domains.EventEntries;
 import ru.vif2ne.backend.domains.Smoking;
+import ru.vif2ne.backend.domains.SmokingPostMessage;
 import ru.vif2ne.backend.domains.SmokingSettings;
 import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.throwable.ApplicationException;
@@ -58,6 +59,7 @@ public class RemoteService {
     public static final String URL_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
     public static final String URL_SETTINGS = "http://vif2ne.ru/nvk/forum/0/security/opt?msg";
     public static final String URL_SMOKING_SETTINGS = "http://vif2ne.ru/nvk/tlk/0/security/optframe";
+    public static final String URL_SMOKING_SEND = "http://vif2ne.ru/nvk/tlk/0/security/message";
 
     public static final String URL_SMOKING = "http://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
 
@@ -142,6 +144,35 @@ public class RemoteService {
         }
     }
 
+
+    public String postSmokingMessage (boolean _private) throws IOException {
+        URL url = new URL(URL_SMOKING_SEND);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        auth(connection);
+        connection.setDoOutput(true);
+        SmokingPostMessage smokingPostMessage = new SmokingPostMessage(session.getSmokingEditMessage().toString(), _private);
+        String qry = smokingPostMessage.getQuery();
+        connection.setFixedLengthStreamingMode(qry.getBytes().length);
+        connection.setRequestProperty("Content-type", "content=\"application/x-www-form-urlencoded\"; charset=windows-1251");
+        try {
+            OutputStream out = new BufferedOutputStream(connection.getOutputStream());
+            out.write(qry.getBytes());
+            out.flush();
+            out.close();
+            String preview = NetUtils.readStreamToString(connection.getInputStream(), "windows-1251");
+            int responseCode = connection.getResponseCode();
+            Log.d(LOG_TAG, "rc:" + responseCode + " html:" + preview);
+            if (responseCode == 200)
+                return preview;
+            else
+                return null;
+
+        } finally {
+            resetCookie(connection);
+            connection.disconnect();
+        }
+
+    }
 
     public String postArticle(String urlPost, Article article) throws IOException, ApplicationException {
         if (article == null) return null;

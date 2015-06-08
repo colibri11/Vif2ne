@@ -18,8 +18,6 @@
 
 package ru.vif2ne.backend.tasks;
 
-import java.io.IOException;
-
 import ru.vif2ne.Session;
 import ru.vif2ne.throwable.ApplicationException;
 
@@ -42,7 +40,7 @@ public abstract class LoadSettingsTask extends AbstractTask {
     protected Object remoteCall() throws ApplicationException {
         try {
             return remoteService.loadSettings();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ApplicationException(e);
         }
     }

@@ -18,8 +18,6 @@
 
 package ru.vif2ne.backend.tasks;
 
-import java.io.IOException;
-
 import ru.vif2ne.Session;
 import ru.vif2ne.backend.domains.Article;
 import ru.vif2ne.throwable.ApplicationException;
@@ -48,9 +46,8 @@ public abstract class PostArticleTask extends AbstractTask {
     protected Object remoteCall() throws ApplicationException {
         try {
             return remoteService.postArticle(urlPost, article);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ApplicationException(e.getMessage(), ApplicationException.SC_UNKNOWN);
+        } catch (Exception e) {
+            throw new ApplicationException(e);
         }
     }
 }

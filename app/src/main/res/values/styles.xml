@@ -55,7 +55,7 @@
     <style name="Button.Flat" parent="android:Widget.Button">
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">@color/flat_button</item>
         <item name="android:textSize">@dimen/text_large_size</item>
         <item name="android:minWidth">64dp</item>
         <item name="android:height">36dp</item>
@@ -67,8 +67,19 @@
         <item name="android:background">@color/transparent</item>
     </style>
 
+    <style name="Button.Flat.mini" parent="Button.Flat">
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:minWidth">32dp</item>
+        <item name="android:height">24dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:gravity">center_vertical</item>>
+    </style>
+
     <style name="Badge" parent="android:TextAppearance.Widget.TextView">
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">10sp</item>
         <item name="android:layout_marginLeft">-10dp</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/badge</item>

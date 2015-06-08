@@ -17,7 +17,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,6 +50,8 @@ public class SmokingActivity extends BaseActivity {
     private MenuItem menuSend;
     private boolean refreshNew;
     private RecyclerView recyclerView;
+    private ImageButton actionSend;
+    private CheckBox smokingPrivate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +65,20 @@ public class SmokingActivity extends BaseActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
+        actionSend = (ImageButton) findViewById(R.id.action_send);
+        actionSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new PostSmokingMessageTask(session, smokingPrivate.isChecked()) {
+                    @Override
+                    public void goSuccess(Object result) {
+                        refreshing(false);
+                    }
+                }.execute((Void) null);
+            }
+        });
         messageEdit = (EditText) findViewById(R.id.message_edit);
+        smokingPrivate = (CheckBox) findViewById(R.id.smoking_private);
         messageTextWather = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -105,6 +121,7 @@ public class SmokingActivity extends BaseActivity {
         }
         Log.d(LOG_TAG, intent.toString());
 
+
         recyclerView = (RecyclerView) findViewById(R.id.recycler_smoking_messages);
         layoutManager = new LinearLayoutManager(this);
         adapter = new SmokeRecyclerAdapter(session, messageEdit);
@@ -129,8 +146,18 @@ public class SmokingActivity extends BaseActivity {
     }
 
     private void sendEnabled() {
+        if (actionSend != null) {
+            if (TextUtils.isEmpty(messageEdit.getText())) {
+                actionSend.setEnabled(false);
+                actionSend.setImageResource(R.drawable.ic_action_content_send_disabled);
+            } else {
+                actionSend.setEnabled(true);
+                actionSend.setImageResource(R.drawable.ic_action_content_send);
+            }
+        }
         if (menuSend == null) return;
         if (TextUtils.isEmpty(messageEdit.getText())) {
+
             menuSend.setEnabled(false);
             menuSend.setIcon(R.drawable.ic_action_content_send_disabled);
         } else {
@@ -173,6 +200,7 @@ public class SmokingActivity extends BaseActivity {
                 if (refreshNew) {
                     layoutManager.scrollToPositionWithOffset(0, 0);
                     messageEdit.setText("");
+                    smokingPrivate.setChecked(false);
                 }
             }
         }.execute((Void) null);
@@ -212,7 +240,7 @@ public class SmokingActivity extends BaseActivity {
                 onBackPressed();
                 break;
             case R.id.smoking_menu_send:
-                new PostSmokingMessageTask(session) {
+                new PostSmokingMessageTask(session, smokingPrivate.isChecked()) {
                     @Override
                     public void goSuccess(Object result) {
                         refreshing(false);

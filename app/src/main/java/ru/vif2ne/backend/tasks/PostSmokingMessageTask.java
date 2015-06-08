@@ -8,8 +8,10 @@ import ru.vif2ne.throwable.ApplicationException;
  */
 public abstract class PostSmokingMessageTask extends AbstractTask {
 
-    public PostSmokingMessageTask(Session session) {
+    private boolean smokingPrivate;
+    public PostSmokingMessageTask(Session session, boolean smokingPrivate) {
         super(session);
+        this.smokingPrivate = smokingPrivate;
     }
 
     @Override
@@ -20,7 +22,7 @@ public abstract class PostSmokingMessageTask extends AbstractTask {
     @Override
     protected Object remoteCall() throws ApplicationException {
         try {
-            return remoteService.postSmokingMessage(false);
+            return remoteService.postSmokingMessage(smokingPrivate);
         } catch (Exception e) {
            throw new ApplicationException(e);
         }

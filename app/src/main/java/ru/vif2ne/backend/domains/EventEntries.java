@@ -131,10 +131,27 @@ public class EventEntries {
         clearDb();
     }
 
+    public long minEventsId(Session session) {
+        SQLiteDatabase readableDatabase = session.getDbHelper().getReadableDatabase();
+        long i = 1;
+        Cursor c = readableDatabase.rawQuery("select min(id) from events", null);
+        if (c.moveToFirst()) {
+            i += c.getLong(0);
+        }
+        c.close();
+        return i;
+    }
+
     public long packDb() {
+        Long minId = minEventsId(session);
         SQLiteDatabase db = session.getDbHelper().getWritableDatabase();
         String lastEventDB = Long.toString(lastEvent - MAX_DB_RECORDS);
-        return db.delete(EventEntry.TABLE_NAME, "(id < ? and favorite = 0) or (deleted = 1) or (title=\"root\" and author = \"vif2\")", new String[]{lastEventDB});
+        Log.d(LOG_TAG,"minId:"+minId);
+        int del = db.delete(TABLE_NAME, "id > ?", new String[]{Long.toString(minId)});
+        Log.d(LOG_TAG, "del entries:" + del);
+        del = db.delete(EventEntry.TABLE_NAME, "(id < ? and favorite = 0) or (deleted = 1) or (title=\"root\" and author = \"vif2\")", new String[]{lastEventDB});
+        Log.d(LOG_TAG, "del entry:" + del);
+        return del;
     }
 
     private void clearDb() {
@@ -394,12 +411,12 @@ public class EventEntries {
         return lastEvent;
     }
 
-    public void setLastEvent(long lastEvent) {
-        this.lastEvent = lastEvent;
-    }
-
     public void setLastEvent(String lastEvent) {
         this.lastEvent = Long.parseLong(lastEvent);
+    }
+
+    public void setLastEvent(long lastEvent) {
+        this.lastEvent = lastEvent;
     }
 
     @Override

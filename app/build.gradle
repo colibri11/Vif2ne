@@ -70,7 +70,7 @@ android {
         applicationId "ru.vif2ne"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 8
+        versionCode 9
         versionName "4"
     }
     buildTypes {

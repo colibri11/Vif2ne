@@ -52,20 +52,20 @@ import ru.vif2ne.throwable.ApplicationException;
 
 public class RemoteService {
 
-    public static final String URL_POST = "http://vif2ne.ru/nvk/forum/0/security/reply/%d";
-    public static final String URL_POST_PREVIEW = "http://vif2ne.ru/nvk/forum/0/security/preview/%d";
-    public static final String URL_POST_REFERER = "http://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
-    public static final String URL_EVENT_LOG = "http://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
-    public static final String URL_ARTICLE = "http://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
-    public static final String URL_SETTINGS = "http://vif2ne.ru/nvk/forum/0/security/opt?msg";
-    public static final String URL_SMOKING_SETTINGS = "http://vif2ne.ru/nvk/tlk/0/security/optframe";
-    public static final String URL_SMOKING_SEND = "http://vif2ne.ru/nvk/tlk/0/security/message";
+    public static final String URL_POST = "https://vif2ne.ru/nvk/forum/0/security/reply/%d";
+    public static final String URL_POST_PREVIEW = "https://vif2ne.ru/nvk/forum/0/security/preview/%d";
+    public static final String URL_POST_REFERER = "https://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
+    public static final String URL_EVENT_LOG = "https://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
+    public static final String URL_ARTICLE = "https://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
+    public static final String URL_SETTINGS = "https://vif2ne.ru/nvk/forum/0/security/opt?msg";
+    public static final String URL_SMOKING_SETTINGS = "https://vif2ne.ru/nvk/tlk/0/security/optframe";
+    public static final String URL_SMOKING_SEND = "https://vif2ne.ru/nvk/tlk/0/security/message";
 
-    public static final String URL_SMOKING = "http://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
+    public static final String URL_SMOKING = "https://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
 
     public static final String EMPTY_USER = "anonymouse";
     private static final String LOG_TAG = "RemoteService";
-    private static final String URL_ACCESS = "http://vif2ne.ru/nvk/forum/security";
+    private static final String URL_ACCESS = "https://vif2ne.ru/nvk/forum/security";
 
     private static final String COOKIE_SET = "Set-Cookie";
     private static final String LOGIN_NAME = "login";

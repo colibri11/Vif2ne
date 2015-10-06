@@ -18,6 +18,11 @@
 
 package ru.vif2ne.ui;
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -35,10 +40,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import ru.vif2ne.R;
 import ru.vif2ne.Session;
+import ru.vif2ne.backend.account.Vif2neAccount;
 import ru.vif2ne.backend.domains.EventEntry;
 import ru.vif2ne.backend.domains.SmokingSettings;
 import ru.vif2ne.backend.domains.UserSettings;
@@ -82,6 +89,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         this.navigatorEventEntries = new ArrayList<>();
         session.setCurrentActivity(this);
+        this.activity = this;
         setParentEventEntry(session.getEventEntry());
         if (getParentEventEntry().isRoot())
             setMode(Session.FLAT_MODE);
@@ -122,11 +130,32 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbarTop);
         initBottomToolbar();
         progressBar = (ProgressBar) findViewById(R.id.progress);
-        this.activity = this;
 
+      /*  AccountManager am = AccountManager.get(this);
+        Account[] accounts = am.getAccountsByType(Vif2neAccount.TYPE);
+        if (accounts.length == 0) {
+            addNewAccount(am);
+        }
+*/
 
     }
 
+    private void addNewAccount(AccountManager am) {
+        am.addAccount(Vif2neAccount.TYPE, Vif2neAccount.TOKEN_FULL_ACCESS, null, null, this,
+                new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        try {
+                            Log.d(LOG_TAG,future.getResult().toString());
+                        } catch (OperationCanceledException | IOException | AuthenticatorException e) {
+                            e.printStackTrace();
+                            Log.d(LOG_TAG, " addNewAccount finish");
+                            MainActivity.this.finish();
+                        }
+                    }
+                }, null
+        );
+    }
 
     @Override
     protected void bind() {

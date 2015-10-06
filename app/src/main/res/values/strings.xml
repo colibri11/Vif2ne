@@ -86,4 +86,6 @@
     <string name="menu_smoking_send">Отправить сообщение</string>
     <string name="send">Отправить</string>
     <string name="smoking_private">лично</string>
+    <string name="vif2ne">ВИФ2НЕ</string>
+    <string name="account_already_exists">Аккаунт уже существует</string>
 </resources>

@@ -82,6 +82,7 @@ public class Session {
         this.findUser = false;
         loadPrefs();
         EventEntries.loadHeaderDb(this);
+        Log.d(LOG_TAG,"start new session");
     }
 
     public void loadSmoking() {

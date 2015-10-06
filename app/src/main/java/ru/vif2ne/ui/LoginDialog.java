@@ -18,6 +18,12 @@
 
 package ru.vif2ne.ui;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,8 +36,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import ru.vif2ne.R;
 import ru.vif2ne.backend.RemoteService;
+import ru.vif2ne.backend.account.Vif2neAccount;
 import ru.vif2ne.backend.tasks.LoginTask;
 
 public class LoginDialog extends BaseActivity {
@@ -87,6 +96,11 @@ public class LoginDialog extends BaseActivity {
         loginAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+      /*          AccountManager am = AccountManager.get(getApplicationContext());
+                Account[] accounts = am.getAccountsByType(Vif2neAccount.TYPE);
+                if (accounts.length == 0) {
+                    addNewAccount(am);
+                }*/
                 new LoginTask(session, usernameEditView.getText().toString(), passView.getText().toString()) {
                     @Override
                     public void goSuccess(Object result) {
@@ -109,6 +123,23 @@ public class LoginDialog extends BaseActivity {
 
         intent = getIntent();
         goOnExit = intent.getStringExtra("goto");
+    }
+
+    private void addNewAccount(AccountManager am) {
+        am.addAccount(Vif2neAccount.TYPE, Vif2neAccount.TOKEN_FULL_ACCESS, null, null, this,
+                new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        try {
+                            Log.d(LOG_TAG,future.getResult().toString());
+                        } catch (OperationCanceledException | IOException | AuthenticatorException e) {
+                            e.printStackTrace();
+                            Log.d(LOG_TAG, " addNewAccount finish");
+                            LoginDialog.this.finish();
+                        }
+                    }
+                }, null
+        );
     }
 
     @Override

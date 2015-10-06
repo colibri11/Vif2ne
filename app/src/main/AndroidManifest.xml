@@ -19,8 +19,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.vif2ne">
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
     <application
         android:name="ru.vif2ne.MainApplication"
@@ -44,6 +50,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Vif.Light.Dialog">
 
+        </activity>
+        <activity
+            android:name="ru.vif2ne.ui.LoginActivity"
+            android:label="@string/title_login"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="ru.vif2ne.ui.NewArticleActivity"
@@ -79,6 +90,17 @@
                   android:scheme="vif2ne" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".backend.account.Vif2neAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/vif2ne_authenticator" />
+        </service>
     </application>
 
 </manifest>

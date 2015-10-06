@@ -52,8 +52,8 @@ def incrementDebugVersionName() {
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     def runTasks = gradle.startParameter.taskNames
     if (':app:assembleRelease' in runTasks) {
@@ -69,7 +69,7 @@ android {
     defaultConfig {
         applicationId "ru.vif2ne"
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 9
         versionName "4"
     }
@@ -86,11 +86,20 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.android.support:design:23.0.1'
     //   compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
-    compile('com.mikepenz.materialdrawer:library:2.9.2@aar') {
+/*    compile('com.mikepenz:materialdrawer:4.3.0@aar') {
+        transitive = true
+    }*/
+/*    compile('com.mikepenz.materialdrawer:library:2.9.2@aar') {
+        transitive = true
+    }*/
+
+    compile('com.mikepenz:materialdrawer:4.3.0@aar') {
         transitive = true
     }
+
     compile 'org.jsoup:jsoup:1.8.2'
 }

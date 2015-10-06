@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -64,28 +66,28 @@ public class RemoteService {
     public static final String URL_SMOKING = "https://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
 
     public static final String EMPTY_USER = "anonymouse";
-    private static final String LOG_TAG = "RemoteService";
+    private static final String LOG_TAG = RemoteService.class.getSimpleName();
     private static final String URL_ACCESS = "https://vif2ne.ru/nvk/forum/security";
 
     private static final String COOKIE_SET = "Set-Cookie";
     private static final String LOGIN_NAME = "login";
     private static final String PASSWD = "dwp";
     private final Session session;
+    private final CookieManager cookieManager;
     private String basicAuth;
 
 
-    private ArrayList<String> setCookies;
     private String userName;
     private String passwd;
 
 
     public RemoteService(Session session) {
-        CookieManager cookieManager = new CookieManager();
+        cookieManager = new CookieManager();
+        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         CookieHandler.setDefault(cookieManager);
         setUserName(EMPTY_USER);
         setPasswd("");
         this.session = session;
-        setCookies = new ArrayList<>();
         basicAuth = "";
     }
 
@@ -97,53 +99,13 @@ public class RemoteService {
         basicAuth = "";
         setUserName(EMPTY_USER);
         setPasswd("");
-        setCookies.clear();
+        cookieManager.getCookieStore().removeAll();
     }
 
     public void auth(URLConnection conn) {
         if (!isAuthenticated()) return;
         conn.setRequestProperty("Authorization", basicAuth);
-        Log.d(LOG_TAG, "Authorization:" + basicAuth);
-        String c = "";
-        for (String cookie : setCookies) {
-            if (TextUtils.isEmpty(c))
-                c = cookie;
-            else
-                c = c + ";" + cookie;
-        }
-        conn.setRequestProperty("Cookie", c);
-        Log.d(LOG_TAG, "Cookie:" + c);
     }
-
-
-    public void addCookie(String cookie) {
-        String cookieName = cookie.substring(0, cookie.indexOf("="));
-        int i = 0;
-        int ii = -1;
-        for (String s : setCookies) {
-            String f = s.substring(0, s.indexOf("="));
-            if (f.equals(cookieName)) {
-                ii = i;
-            }
-            i++;
-        }
-        if (ii >= 0) {
-            setCookies.remove(ii);
-        }
-        setCookies.add(cookie);
-    }
-
-    public void resetCookie(HttpURLConnection connection) {
-        Map<String, List<String>> hf = connection.getHeaderFields();
-        List<String> cookieStrings = hf.get(COOKIE_SET);
-        if (cookieStrings == null) return;
-        for (String cookie : cookieStrings) {
-            String c = cookie.substring(0, cookie.indexOf(";"));
-            Log.d(LOG_TAG, c);
-            addCookie(c);
-        }
-    }
-
 
     public String postSmokingMessage (boolean _private) throws IOException {
         URL url = new URL(URL_SMOKING_SEND);
@@ -168,7 +130,6 @@ public class RemoteService {
                 return null;
 
         } finally {
-            resetCookie(connection);
             connection.disconnect();
         }
 
@@ -200,14 +161,24 @@ public class RemoteService {
                 return null;
 
         } finally {
-            resetCookie(connection);
             connection.disconnect();
         }
 
     }
 
+    private void dumpCookie() {
+        Log.d(LOG_TAG,"cookies");
+        for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
 
-    public void login(String user, String passwd) throws IOException, ApplicationException {
+            Log.d(LOG_TAG, "cookie:" + httpCookie.toString() +
+                            " domain:" + httpCookie.getDomain() +
+                            " path:" + httpCookie.getPath() +
+                            " ports:" + httpCookie.getPortlist()
+            );
+        }
+    }
+
+    public String login(String user, String passwd) throws IOException, ApplicationException {
         URL url = new URL(URL_ACCESS);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         setUserName(EMPTY_USER);
@@ -217,7 +188,7 @@ public class RemoteService {
         connection.setDoOutput(true);
         try {
             connection.connect();
-            resetCookie(connection);
+         //   resetCookie(connection);
 
             int responseCode = connection.getResponseCode();
             Log.d(LOG_TAG, "responseCode:" + responseCode);
@@ -225,7 +196,8 @@ public class RemoteService {
                 case 200: {
                     setUserName(user);
                     setPasswd(passwd);
-                    break;
+             //       dumpCookie();
+                    return basicAuth;
                 }
                 case 401: {
                     basicAuth = "";
@@ -258,7 +230,7 @@ public class RemoteService {
                         responseCode);
             return new Vif2NeXmlSmokingParser().parse(smoking, in);
         } finally {
-            resetCookie(urlConnection);
+       //     resetCookie(urlConnection);
             urlConnection.disconnect();
         }
 
@@ -279,7 +251,7 @@ public class RemoteService {
                         responseCode);
             return new Vif2NeXmlParser().parse(entries, lastEventId, in);
         } finally {
-            resetCookie(urlConnection);
+       //     resetCookie(urlConnection);
             urlConnection.disconnect();
         }
 
@@ -294,7 +266,7 @@ public class RemoteService {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             return NetUtils.readStreamToString(in, "windows-1251");
         } finally {
-            resetCookie(urlConnection);
+       //     resetCookie(urlConnection);
             urlConnection.disconnect();
         }
     }
@@ -308,7 +280,7 @@ public class RemoteService {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             return new SmokingSettings(NetUtils.readStreamToString(in, "windows-1251"));
         } finally {
-            resetCookie(urlConnection);
+       //     resetCookie(urlConnection);
             urlConnection.disconnect();
         }
 
@@ -323,7 +295,7 @@ public class RemoteService {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             return new UserSettings(NetUtils.readStreamToString(in, "windows-1251"));
         } finally {
-            resetCookie(urlConnection);
+       //     resetCookie(urlConnection);
             urlConnection.disconnect();
         }
 
@@ -338,7 +310,7 @@ public class RemoteService {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             return NetUtils.readStreamToString(in, "windows-1251");
         } finally {
-            resetCookie(urlConnection);
+      //      resetCookie(urlConnection);
             urlConnection.disconnect();
         }
     }

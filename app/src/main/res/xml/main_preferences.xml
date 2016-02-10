@@ -24,10 +24,6 @@
         android:icon="@drawable/ic_action_action_settings"
         android:title="@string/preference_title_settings_application">
         <CheckBoxPreference
-            android:key="pref_detail"
-            android:summary="@string/summary_detail_preference"
-            android:title="@string/title_detail_preference" />
-        <CheckBoxPreference
             android:key="pref_find_users"
             android:summary="@string/summary_find_users_preference"
             android:title="@string/title_find_users_preference" />

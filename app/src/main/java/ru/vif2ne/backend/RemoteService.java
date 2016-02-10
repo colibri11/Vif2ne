@@ -53,21 +53,23 @@ import ru.vif2ne.backend.domains.UserSettings;
 import ru.vif2ne.throwable.ApplicationException;
 
 public class RemoteService {
+    public static final String URL_DOMAIN = "https://vif2ne.org";
 
-    public static final String URL_POST = "https://vif2ne.ru/nvk/forum/0/security/reply/%d";
-    public static final String URL_POST_PREVIEW = "https://vif2ne.ru/nvk/forum/0/security/preview/%d";
-    public static final String URL_POST_REFERER = "https://vif2ne.ru/nvk/forum/0/security/replymsg/%d";
-    public static final String URL_EVENT_LOG = "https://vif2ne.ru/nvk/forum/0/co/tree?xml=%d";
-    public static final String URL_ARTICLE = "https://vif2ne.ru/nvk/forum/0/co/%d.htm?plain";
-    public static final String URL_SETTINGS = "https://vif2ne.ru/nvk/forum/0/security/opt?msg";
-    public static final String URL_SMOKING_SETTINGS = "https://vif2ne.ru/nvk/tlk/0/security/optframe";
-    public static final String URL_SMOKING_SEND = "https://vif2ne.ru/nvk/tlk/0/security/message";
 
-    public static final String URL_SMOKING = "https://vif2ne.ru/nvk/tlk/0/security/refresh?xml=1&msg=%d";
+    public static final String URL_POST = URL_DOMAIN+"/nvk/forum/0/security/reply/%d";
+    public static final String URL_POST_PREVIEW = URL_DOMAIN+"/nvk/forum/0/security/preview/%d";
+    public static final String URL_POST_REFERER = URL_DOMAIN+"/nvk/forum/0/security/replymsg/%d";
+    public static final String URL_EVENT_LOG = URL_DOMAIN+"/nvk/forum/0/co/tree?xml=%d";
+    public static final String URL_ARTICLE = URL_DOMAIN+"/nvk/forum/0/co/%d.htm?plain";
+    public static final String URL_SETTINGS = URL_DOMAIN+"/nvk/forum/0/security/opt?msg";
+    public static final String URL_SMOKING_SETTINGS = URL_DOMAIN+"/nvk/tlk/0/security/optframe";
+    public static final String URL_SMOKING_SEND = URL_DOMAIN+"/nvk/tlk/0/security/message";
+
+    public static final String URL_SMOKING = URL_DOMAIN+"/nvk/tlk/0/security/refresh?xml=1&msg=%d";
 
     public static final String EMPTY_USER = "anonymouse";
     private static final String LOG_TAG = RemoteService.class.getSimpleName();
-    private static final String URL_ACCESS = "https://vif2ne.ru/nvk/forum/security";
+    private static final String URL_ACCESS = URL_DOMAIN+"/nvk/forum/security";
 
     private static final String COOKIE_SET = "Set-Cookie";
     private static final String LOGIN_NAME = "login";

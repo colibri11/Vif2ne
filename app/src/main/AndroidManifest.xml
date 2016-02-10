@@ -91,7 +91,7 @@
             </intent-filter>
         </activity>
 
-        <service
+<!--        <service
             android:name=".backend.account.Vif2neAuthenticatorService"
             android:exported="false">
             <intent-filter>
@@ -100,7 +100,7 @@
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/vif2ne_authenticator" />
-        </service>
+        </service>-->
     </application>
 
 </manifest>

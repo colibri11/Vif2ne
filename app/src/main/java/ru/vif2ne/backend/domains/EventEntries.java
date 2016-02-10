@@ -40,7 +40,7 @@ public class EventEntries {
 
     public static final String TABLE_NAME = "events";
     private static final String LOG_TAG = "EventEntries";
-    private static final long MAX_DB_RECORDS = 5000;
+    private static final long MAX_DB_RECORDS = 3000;
 
     protected ArrayList<Long> lastLoadedIds;
 
@@ -300,6 +300,7 @@ public class EventEntries {
         setLastLoadedIds(idParse);
         if (idParse != null)
             save();
+        Log.d(LOG_TAG, "makeTree Full End");
     }
 
     public void sortTree(EventEntry eventEntry) {

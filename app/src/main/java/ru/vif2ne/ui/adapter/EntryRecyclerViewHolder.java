@@ -203,7 +203,7 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
                     showArticle(eventEntry);
                 }
             } else {
-                if (session.isDetailView()) {
+
                     articleWOImages.setVisibility(View.VISIBLE);
                     if (!TextUtils.isEmpty(eventEntry.getArticle())) {
                         //      articleWOImages.setMaxLines(4);
@@ -216,8 +216,7 @@ public class EntryRecyclerViewHolder extends RecyclerView.ViewHolder {
                         else
                             articleWOImages.setText("");
                     }
-                } else
-                    articleWOImages.setVisibility(View.GONE);
+
             }
         }
         HashMap<String, Integer> chld = eventEntries.loadChildCountEventEntriesWithTree(eventEntry);

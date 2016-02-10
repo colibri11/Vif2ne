@@ -64,7 +64,6 @@ public class Session {
     protected DBHelper dbHelper;
     private String webContent;
     private Article article;
-    private boolean detailView;
     private Boolean credentialStatus;
     private boolean findUser;
 
@@ -130,9 +129,7 @@ public class Session {
 
     public void loadPrefs() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
-        setDetailView(prefs.getBoolean("pref_detail", false));
         setFindUser(prefs.getBoolean("pref_find_users", false));
-        Log.d(LOG_TAG, "detail:" + isDetailView());
         intentNeedRefresh("end: loadPrefs");
     }
 
@@ -210,13 +207,6 @@ public class Session {
         this.article = article;
     }
 
-    public boolean isDetailView() {
-        return detailView;
-    }
-
-    public void setDetailView(boolean detailView) {
-        this.detailView = detailView;
-    }
 
     public Boolean getCredentialStatus() {
         return credentialStatus;

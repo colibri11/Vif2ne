@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void addNewAccount(AccountManager am) {
+/*    private void addNewAccount(AccountManager am) {
         am.addAccount(Vif2neAccount.TYPE, Vif2neAccount.TOKEN_FULL_ACCESS, null, null, this,
                 new AccountManagerCallback<Bundle>() {
                     @Override
@@ -155,7 +155,7 @@ public class MainActivity extends BaseActivity {
                     }
                 }, null
         );
-    }
+    } */
 
     @Override
     protected void bind() {
